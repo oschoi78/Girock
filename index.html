@@ -408,14 +408,14 @@ const todayK=()=>{const d=new Date();return dk(d.getFullYear(),d.getMonth(),d.ge
 // ── 페이지 ──
 function go(id){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); const p=document.getElementById(id); p.classList.add('active'); p.scrollTop=0; }
 
-// ── 저장소 ──
-async function load(){
-  try{const r=await window.storage.get('diary-entries');    if(r) entries=JSON.parse(r.value);}catch(e){entries={};}
-  try{const r=await window.storage.get('diary-events');     if(r) events=JSON.parse(r.value);}catch(e){events=[];}
+// ── 저장소 (localStorage - 영구 저장) ──
+function load(){
+  try{ const r=localStorage.getItem('diary-entries'); if(r) entries=JSON.parse(r); }catch(e){ entries={}; }
+  try{ const r=localStorage.getItem('diary-events');  if(r) events=JSON.parse(r);  }catch(e){ events=[]; }
   renderCal(); renderEvGrid();
 }
-async function saveEntries(){ try{await window.storage.set('diary-entries',JSON.stringify(entries));}catch(e){} }
-async function saveEvents(){  try{await window.storage.set('diary-events', JSON.stringify(events)); }catch(e){} }
+function saveEntries(){ try{ localStorage.setItem('diary-entries', JSON.stringify(entries)); }catch(e){} }
+function saveEvents(){  try{ localStorage.setItem('diary-events',  JSON.stringify(events));  }catch(e){} }
 
 // ── 달력 ──
 function renderCal(){
