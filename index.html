@@ -45,7 +45,8 @@
   .day-num{font-size:14px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;}
   .edots{display:flex;gap:2px;height:6px;align-items:center;}
   .dot{width:4px;height:4px;border-radius:50%;}
-  .dot.t{background:var(--accent);}.dot.v{background:#6ea8c8;}.dot.p{background:#c86ea8;}.dot.e{background:#4a7fb5;}
+  .day-cell.selected-day .day-num{background:rgba(184,137,78,.2);border-radius:50%;color:var(--accent);font-weight:700;}
+  .day-cell.today.selected-day .day-num{background:var(--accent);color:#fff;}
 
   /* 사건 스트립 */
   .ev-strip{margin:20px 16px 0;background:var(--surface);border-radius:16px;padding:16px;border:1px solid var(--border);}
@@ -180,7 +181,10 @@
 
   <div class="ev-strip">
     <div class="strip-hd">
-      <div class="strip-title">📌 그날의 사건들</div>
+      <div>
+        <div class="strip-title">📌 그날의 사건들</div>
+        <div id="selectedDayBadge" style="display:none;font-size:12px;color:var(--accent);font-weight:600;margin-top:4px;"></div>
+      </div>
       <button class="strip-add" onclick="goAdd()">＋ 추가</button>
     </div>
     <div class="ev-grid" id="evGrid"></div>
@@ -321,7 +325,7 @@
 <!-- ══ PAGE 4 : 사건 상세 ══ -->
 <div id="p4" class="page">
   <div class="ph">
-    <button class="back-btn" onclick="go('p1')">←</button>
+    <button class="back-btn" onclick="dayKey?go('p5'):go('p1')">←</button>
     <div class="ph-title" id="d-ph-title">사건 상세</div>
     <button class="ph-del" onclick="delCurEv()">삭제</button>
   </div>
@@ -347,7 +351,36 @@
   </div>
 </div>
 
-<!-- 라이트박스 -->
+<!-- ══ PAGE 5 : 그날의 기록 (날짜 탭) ══ -->
+<div id="p5" class="page">
+  <div class="ph">
+    <button class="back-btn" onclick="go('p1')">←</button>
+    <div style="flex:1">
+      <div id="p5-date-main" style="font-size:17px;font-weight:600;"></div>
+      <div id="p5-date-sub"  style="font-size:11px;color:var(--text3);margin-top:1px;"></div>
+    </div>
+    <button class="ph-btn" onclick="goWriteDiary()">일기 쓰기</button>
+  </div>
+  <div style="padding:16px;padding-bottom:40px;">
+
+    <!-- 이날의 사건들 -->
+    <div id="p5-ev-sec">
+      <div class="sec-lbl" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>📌 이날의 사건들</span>
+        <button onclick="goAddFromDay()" style="background:var(--accent);color:#fff;border:none;border-radius:14px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">＋ 추가</button>
+      </div>
+      <div id="p5-ev-list" style="margin-top:10px;display:flex;flex-direction:column;gap:8px;margin-bottom:20px;"></div>
+    </div>
+
+    <!-- 일기 미리보기 -->
+    <div id="p5-diary-sec">
+      <div class="sec-lbl">✏️ 일기</div>
+      <div id="p5-diary-preview" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;cursor:pointer;" onclick="goWriteDiary()">
+      </div>
+    </div>
+
+  </div>
+</div>
 <div id="lb" onclick="closeLb()">
   <button id="lb-close" onclick="closeLb()">✕</button>
   <img id="lb-img" src="" alt="">
@@ -396,7 +429,7 @@ function renderCal(){
     let cls='day-cell';
     if(dow===0)cls+=' sunday'; if(dow===6)cls+=' saturday';
     if(d===now.getDate()&&vm===now.getMonth()&&vy===now.getFullYear())cls+=' today';
-    cell.className=cls; cell.onclick=()=>openEntry(key);
+    cell.className=cls; cell.onclick=()=>selectDay(key);
     const num=document.createElement('div'); num.className='day-num'; num.textContent=d; cell.appendChild(num);
     const e=entries[key], hasEv=events.some(ev=>ev.date===key);
     if(e||hasEv){
@@ -412,13 +445,49 @@ function renderCal(){
 }
 function chMonth(d){ vm+=d; if(vm>11){vm=0;vy++;} if(vm<0){vm=11;vy--;} renderCal(); }
 
+// ── 날짜 선택 (메인 화면에서) ──
+let selectedDay = null; // 선택된 날짜 key, null이면 전체
+
+function selectDay(key){
+  selectedDay = (selectedDay===key) ? null : key; // 같은 날 다시 탭하면 해제
+  dayKey = selectedDay;
+  // 달력 선택 표시 갱신
+  document.querySelectorAll('.day-cell').forEach(c=>c.classList.remove('selected-day'));
+  if(selectedDay){
+    const [y,m,d]=key.split('-');
+    const cells=document.querySelectorAll('.day-cell');
+    cells.forEach(c=>{ if(c.querySelector('.day-num')?.textContent==String(+d)) c.classList.add('selected-day'); });
+  }
+  // 날짜 뱃지 갱신
+  const badge=document.getElementById('selectedDayBadge');
+  if(selectedDay){
+    const [y,m,d]=selectedDay.split('-');
+    const dow=DK[new Date(+y,+m-1,+d).getDay()];
+    badge.textContent=`${m}월 ${d}일 (${dow}) 사건들`;
+    badge.style.display='inline-block';
+  } else {
+    badge.textContent='';
+    badge.style.display='none';
+  }
+  renderEvGrid();
+}
+
 // ── 사건 그리드 ──
 function renderEvGrid(){
   const grid=document.getElementById('evGrid'), empty=document.getElementById('evEmpty');
   grid.innerHTML='';
-  const sorted=[...events].sort((a,b)=>b.date.localeCompare(a.date));
-  if(!sorted.length){empty.style.display='block';return;} empty.style.display='none';
-  sorted.forEach(ev=>{
+  // 선택된 날짜 있으면 그날만, 없으면 전체
+  let list = selectedDay
+    ? events.filter(ev=>ev.date===selectedDay)
+    : [...events];
+  list = list.sort((a,b)=>b.date.localeCompare(a.date));
+  if(!list.length){
+    empty.style.display='block';
+    empty.textContent = selectedDay ? '이날의 사건이 없어요 📌' : '아직 기록된 사건이 없어요 📌';
+    return;
+  }
+  empty.style.display='none';
+  list.forEach(ev=>{
     const [y,m,d]=ev.date.split('-');
     const card=document.createElement('div'); card.className='ev-card'; card.style.borderLeftColor=ev.color;
     const titleHtml=ev.title
@@ -438,7 +507,7 @@ function renderEvGrid(){
 
 // ── 사건 추가 ──
 function goAdd(){
-  document.getElementById('ev-date').value=todayK();
+  document.getElementById('ev-date').value=selectedDay||todayK();
   document.getElementById('ev-title').value='';
   document.getElementById('ev-memo').value='';
   evPhotos=[]; evVideos=[];
@@ -457,7 +526,6 @@ function saveEv(){
   const tag  =document.querySelector('#ev-tags .tag-opt.sel')?.dataset.tag||'일상';
   const color=document.querySelector('#ev-cols .col-opt.sel')?.dataset.color||'#4a7fb5';
   stopEvSTT();
-  // 동영상은 objectURL이라 페이지 내에서만 재생 가능 - 파일명만 보관
   events.unshift({id:Date.now().toString(),date,title,memo,tag,color,
     photos:[...evPhotos], videos:evVideos.map(v=>({name:v.name,url:v.url,b64:v.b64||''}))});
   saveEvents(); renderEvGrid(); renderCal();
@@ -466,8 +534,11 @@ function saveEv(){
 }
 
 function delEv(id){ events=events.filter(e=>e.id!==id); saveEvents(); renderEvGrid(); renderCal(); }
-
-// ── 사건 상세 뷰 ──
+function delCurEv(){
+  if(!curEvId)return;
+  if(!confirm('이 사건을 삭제할까요?'))return;
+  delEv(curEvId); curEvId=null; go('p1');
+}
 function openEvDetail(id){
   const ev=events.find(e=>e.id===id); if(!ev) return;
   curEvId=id;
@@ -516,7 +587,9 @@ function openEvDetail(id){
 function delCurEv(){
   if(!curEvId)return;
   if(!confirm('이 사건을 삭제할까요?'))return;
-  delEv(curEvId); curEvId=null; go('p1');
+  delEv(curEvId); curEvId=null;
+  if(dayKey){renderDayEvList(dayKey);renderDayDiary(dayKey);go('p5');}
+  else{go('p1');}
 }
 
 // ── 사건 추가 STT ──
@@ -568,7 +641,84 @@ function renderEvVL(){
   evVideos.forEach((v,i)=>{const item=document.createElement('div');item.className='vid-item';item.innerHTML=`<video src="${v.url}" controls></video><div class="vid-footer"><span class="vid-name">${v.name}</span><button class="vid-del" onclick="evVideos.splice(${i},1);renderEvVL()">🗑</button></div>`;el.appendChild(item);});
 }
 
-// ── 일기 뷰 ──
+// ── 날짜 탭 → p5 그날의 기록 ──
+let dayKey = null;
+
+function openDay(key){
+  dayKey = key;
+  const [y,m,d]=key.split('-'), dt=new Date(+y,+m-1,+d);
+  document.getElementById('p5-date-main').textContent=`${y}년 ${m}월 ${d}일`;
+  document.getElementById('p5-date-sub').textContent=DK[dt.getDay()]+'요일';
+  renderDayEvList(key);
+  renderDayDiary(key);
+  go('p5');
+}
+
+function renderDayEvList(key){
+  const el=document.getElementById('p5-ev-list');
+  el.innerHTML='';
+  const dayEvs=events.filter(ev=>ev.date===key);
+  if(!dayEvs.length){
+    el.innerHTML='<div style="color:var(--text3);font-size:13px;padding:8px 0;">아직 기록된 사건이 없어요</div>';
+    return;
+  }
+  dayEvs.forEach(ev=>{
+    const item=document.createElement('div');
+    item.style.cssText='display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:12px;padding:12px 14px;cursor:pointer;border-left:4px solid '+ev.color+';';
+    item.innerHTML=`
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:600;color:var(--text);">${ev.title||'(제목 없음)'}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px;">${ev.tag}${ev.memo?' · '+ev.memo.slice(0,20)+(ev.memo.length>20?'…':''):''}</div>
+      </div>
+      <div style="display:flex;gap:4px;align-items:center;">
+        ${ev.photos&&ev.photos.length?'<span style="font-size:11px;">📷'+ev.photos.length+'</span>':''}
+        ${ev.videos&&ev.videos.length?'<span style="font-size:11px;">🎬'+ev.videos.length+'</span>':''}
+        <span style="color:var(--text3);font-size:16px;">›</span>
+      </div>`;
+    item.onclick=()=>openEvDetail(ev.id);
+    el.appendChild(item);
+  });
+}
+
+function renderDayDiary(key){
+  const e=entries[key]||{};
+  const el=document.getElementById('p5-diary-preview');
+  if(!e.text&&!e.mood&&!(e.photos&&e.photos.length)&&!(e.voices&&e.voices.length)){
+    el.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:10px 0;">탭해서 일기를 작성해 보세요 ✏️</div>';
+    return;
+  }
+  let html='';
+  if(e.mood) html+=`<div style="font-size:14px;margin-bottom:8px;">${e.mood}</div>`;
+  if(e.text) html+=`<div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:8px;">${e.text.slice(0,80)}${e.text.length>80?'…':''}</div>`;
+  const badges=[];
+  if(e.voices&&e.voices.length) badges.push('🎙️ '+e.voices.length);
+  if(e.photos&&e.photos.length) badges.push('📷 '+e.photos.length);
+  if(e.videos&&e.videos.length) badges.push('🎬 '+e.videos.length);
+  if(badges.length) html+=`<div style="font-size:11px;color:var(--text3);">${badges.join(' · ')}</div>`;
+  el.innerHTML=html;
+}
+
+function goWriteDiary(){
+  openEntry(dayKey);
+}
+
+function goAddFromDay(){
+  // 날짜를 그날로 미리 설정하고 추가 페이지로
+  document.getElementById('ev-date').value=dayKey||todayK();
+  document.getElementById('ev-title').value='';
+  document.getElementById('ev-memo').value='';
+  evPhotos=[]; evVideos=[];
+  renderEvPG(); renderEvVL();
+  stopEvSTT();
+  document.querySelectorAll('#ev-tags .tag-opt').forEach((t,i)=>t.classList.toggle('sel',i===0));
+  document.querySelectorAll('#ev-cols .col-opt').forEach((c,i)=>c.classList.toggle('sel',i===0));
+  go('p2');
+}
+
+// 사건 저장 후 p5 새로고침
+const _origSaveEv = saveEv;
+
+// ── 일기 뷰 (p3) ──
 function openEntry(key){
   selKey=key;const [y,m,d]=key.split('-'),dt=new Date(+y,+m-1,+d);
   document.getElementById('e-date-main').textContent=`${y}년 ${m}월 ${d}일`;
@@ -593,7 +743,7 @@ function openEntry(key){
   }else{sec.style.display='none';}
   stopRec();stopSTT();go('p3');
 }
-function closeEntry(){stopRec();stopSTT();selKey=null;go('p1');}
+function closeEntry(){stopRec();stopSTT();selKey=null;if(dayKey){renderDayDiary(dayKey);go('p5');}else{go('p1');}}
 function saveEntry(){
   if(!selKey)return;
   const e=entries[selKey]||{voices:[],photos:[],videos:[]};
@@ -602,7 +752,9 @@ function saveEntry(){
   if(!e.voices)e.voices=[];if(!e.photos)e.photos=[];if(!e.videos)e.videos=[];
   if(e.text||e.mood||e.voices.length||e.photos.length||e.videos.length)entries[selKey]=e;
   else delete entries[selKey];
-  saveEntries();renderCal();showToast('저장되었어요 ✓');
+  saveEntries();renderCal();
+  if(dayKey){renderDayDiary(dayKey);}
+  showToast('저장되었어요 ✓');
 }
 function selMood(el){document.querySelectorAll('.mood-chip').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
 
