@@ -6,285 +6,231 @@
 <title>기록들</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
-  * { margin:0; padding:0; box-sizing:border-box; }
-  :root {
-    --bg:#f7f5f0; --surface:#ffffff; --surface2:#f0ede8;
-    --accent:#b8894e; --text:#1a1814; --text2:#6a6560; --text3:#aaa8a4;
-    --border:#e4e0da;
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --bg:#f7f5f0;--surface:#fff;--surface2:#f0ede8;
+    --accent:#b8894e;--text:#1a1814;--text2:#6a6560;--text3:#aaa8a4;--border:#e4e0da;
   }
-  body { font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+  body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 
-  /* ── 페이지 전환 ── */
-  .page { display:none; position:fixed; inset:0; background:var(--bg); overflow-y:auto; max-width:420px; margin:0 auto; }
-  .page.active { display:block; }
+  /* 페이지 전환 */
+  .page{display:none;position:fixed;inset:0;background:var(--bg);overflow-y:auto;max-width:430px;margin:0 auto;}
+  .page.active{display:block;}
 
-  /* ════ PAGE 1 : 메인 ════ */
-  #page-main { padding-bottom:80px; }
-  .app-header { padding:28px 20px 16px; }
-  .app-title { font-size:22px; font-weight:700; letter-spacing:-0.5px; color:var(--accent); }
-  .app-subtitle { font-size:12px; color:var(--text3); margin-top:2px; }
-  .month-nav { display:flex; align-items:center; gap:16px; padding:0 20px 20px; }
-  .month-label { flex:1; text-align:center; font-size:18px; font-weight:500; }
-  .nav-btn { width:36px; height:36px; border:1px solid var(--border); border-radius:50%; background:var(--surface); color:var(--text2); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; }
-  .nav-btn:hover { border-color:var(--accent); color:var(--accent); }
-  .weekdays { display:grid; grid-template-columns:repeat(7,1fr); padding:0 12px; margin-bottom:6px; }
-  .weekday { text-align:center; font-size:11px; color:var(--text3); padding:4px 0; font-weight:500; }
-  .weekday:first-child { color:#c06060; }
-  .weekday:last-child  { color:#6080c0; }
-  .calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; padding:0 12px; }
-  .day-cell { aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:10px; cursor:pointer; transition:background .15s; gap:3px; }
-  .day-cell:hover { background:var(--surface2); }
-  .day-cell.empty { cursor:default; }
-  .day-cell.today .day-num { background:var(--accent); color:#fff; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; }
-  .day-cell.sunday .day-num  { color:#c06060; }
-  .day-cell.saturday .day-num{ color:#6080c0; }
-  .day-num { font-size:14px; width:28px; height:28px; display:flex; align-items:center; justify-content:center; }
-  .entry-dots { display:flex; gap:2px; height:6px; align-items:center; }
-  .dot { width:4px; height:4px; border-radius:50%; }
-  .dot.text  { background:var(--accent); }
-  .dot.voice { background:#6ea8c8; }
-  .dot.photo { background:#c86ea8; }
-  .dot.video { background:#6ec87a; }
-  .dot.event { background:#4a7fb5; }
+  /* 공통 헤더 */
+  .ph{padding:18px 16px 14px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:10;}
+  .back-btn{width:36px;height:36px;border:none;background:var(--surface2);border-radius:50%;color:var(--text2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .ph-title{flex:1;font-size:17px;font-weight:700;color:var(--text);}
+  .ph-btn{padding:8px 18px;background:var(--accent);color:#fff;border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .ph-del{background:none;border:none;color:#c05050;font-size:13px;cursor:pointer;font-family:inherit;padding:8px 4px;}
 
-  /* 그날의 사건들 스트립 */
-  .events-strip { margin:20px 16px 0; background:var(--surface); border-radius:16px; padding:16px; border:1px solid var(--border); }
-  .strip-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
-  .strip-title { font-size:11px; color:var(--text3); font-weight:600; letter-spacing:1px; text-transform:uppercase; }
-  .strip-add-btn {
-    display:flex; align-items:center; gap:5px;
-    padding:6px 14px; background:var(--accent); color:#fff;
-    border:none; border-radius:20px; font-size:12px; font-weight:700;
-    cursor:pointer; font-family:'Noto Sans KR',sans-serif;
-  }
+  /* ══ PAGE 1 ══ */
+  #p1{padding-bottom:80px;}
+  .app-header{padding:28px 20px 16px;}
+  .app-title{font-size:22px;font-weight:700;letter-spacing:-.5px;color:var(--accent);}
+  .app-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+  .month-nav{display:flex;align-items:center;gap:16px;padding:0 20px 20px;}
+  .month-lbl{flex:1;text-align:center;font-size:18px;font-weight:500;}
+  .nav-btn{width:36px;height:36px;border:1px solid var(--border);border-radius:50%;background:var(--surface);color:var(--text2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .nav-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .weekdays{display:grid;grid-template-columns:repeat(7,1fr);padding:0 12px;margin-bottom:6px;}
+  .weekday{text-align:center;font-size:11px;color:var(--text3);padding:4px 0;font-weight:500;}
+  .weekday:first-child{color:#c06060;}.weekday:last-child{color:#6080c0;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:0 12px;}
+  .day-cell{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;cursor:pointer;transition:background .15s;gap:3px;}
+  .day-cell:hover{background:var(--surface2);}
+  .day-cell.empty{cursor:default;}
+  .day-cell.today .day-num{background:var(--accent);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;}
+  .day-cell.sunday .day-num{color:#c06060;}.day-cell.saturday .day-num{color:#6080c0;}
+  .day-num{font-size:14px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;}
+  .edots{display:flex;gap:2px;height:6px;align-items:center;}
+  .dot{width:4px;height:4px;border-radius:50%;}
+  .dot.t{background:var(--accent);}.dot.v{background:#6ea8c8;}.dot.p{background:#c86ea8;}.dot.e{background:#4a7fb5;}
 
-  /* 카드 그리드 (병렬 나열) */
-  .events-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .event-card {
-    background:var(--surface2); border-radius:12px; padding:12px;
-    display:flex; flex-direction:column; gap:6px;
-    border-left:4px solid var(--accent);
-    animation:fadeIn .2s ease;
-    cursor:default;
-  }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)} }
-  .event-card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:4px; }
-  .event-card-title { font-size:13px; font-weight:600; color:var(--text); line-height:1.4; word-break:keep-all; flex:1; }
-  .event-card-del { background:none; border:none; color:var(--text3); cursor:pointer; font-size:14px; line-height:1; padding:0; flex-shrink:0; }
-  .event-card-del:hover { color:#e04040; }
-  .event-card-date { font-size:10px; color:var(--text3); }
-  .event-card-tag { display:inline-block; font-size:10px; color:#fff; padding:2px 7px; border-radius:10px; font-weight:600; }
-  .empty-events { color:var(--text3); font-size:13px; text-align:center; padding:10px 0; }
+  /* 사건 스트립 */
+  .ev-strip{margin:20px 16px 0;background:var(--surface);border-radius:16px;padding:16px;border:1px solid var(--border);}
+  .strip-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .strip-title{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:1px;text-transform:uppercase;}
+  .strip-add{display:flex;align-items:center;gap:5px;padding:6px 14px;background:var(--accent);color:#fff;border:none;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .ev-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .ev-card{background:var(--surface2);border-radius:12px;padding:12px;border-left:4px solid var(--accent);cursor:pointer;transition:opacity .15s;animation:fi .2s ease;}
+  .ev-card:hover{opacity:.8;}
+  @keyframes fi{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+  .ev-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:4px;margin-bottom:4px;}
+  .ev-card-title{font-size:13px;font-weight:600;color:var(--text);line-height:1.4;flex:1;word-break:keep-all;}
+  .ev-card-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;line-height:1;flex-shrink:0;padding:0;}
+  .ev-card-del:hover{color:#e04040;}
+  .ev-card-date{font-size:10px;color:var(--text3);margin-bottom:4px;}
+  .ev-card-tag{display:inline-block;font-size:10px;color:#fff;padding:2px 7px;border-radius:10px;font-weight:600;}
+  .ev-empty{color:var(--text3);font-size:13px;text-align:center;padding:14px 0;}
 
-  /* ════ PAGE 2 : 사건 추가 ════ */
-  #page-add-event { padding-bottom:40px; }
-  .page-header {
-    padding:18px 16px 14px; display:flex; align-items:center; gap:12px;
-    border-bottom:1px solid var(--border); background:var(--surface);
-    position:sticky; top:0; z-index:10;
-  }
-  .back-btn { width:36px; height:36px; border:none; background:var(--surface2); border-radius:50%; color:var(--text2); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-  .page-title { font-size:17px; font-weight:700; color:var(--text); flex:1; }
-  .page-save-btn { padding:8px 18px; background:var(--accent); color:#fff; border:none; border-radius:20px; font-size:13px; font-weight:700; cursor:pointer; font-family:'Noto Sans KR',sans-serif; }
-  .add-body { padding:20px 16px; }
-  .field { margin-bottom:22px; }
-  .field-label { font-size:11px; color:var(--text3); font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; display:block; }
-  .field-input {
-    width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:12px;
-    font-size:15px; font-family:'Noto Sans KR',sans-serif; color:var(--text);
-    background:var(--surface); outline:none; transition:border-color .2s;
-  }
-  .field-input:focus { border-color:var(--accent); }
-  .field-input::placeholder { color:var(--text3); }
-  .field-textarea {
-    width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:12px;
-    font-size:14px; font-family:'Noto Sans KR',sans-serif; color:var(--text);
-    background:var(--surface); outline:none; transition:border-color .2s;
-    resize:none; min-height:100px; line-height:1.6;
-  }
-  .field-textarea:focus { border-color:var(--accent); }
-  .field-textarea::placeholder { color:var(--text3); }
+  /* ══ PAGE 2 : 추가 ══ */
+  .add-body{padding:20px 16px;padding-bottom:40px;}
+  .field{margin-bottom:22px;}
+  .field-lbl{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+  .field-opt{font-size:10px;color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;}
+  .fi{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;color:var(--text);background:var(--surface);outline:none;transition:border-color .2s;}
+  .fi:focus{border-color:var(--accent);}
+  .fi::placeholder{color:var(--text3);}
+  .fta{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;font-family:inherit;color:var(--text);background:var(--surface);outline:none;resize:none;min-height:110px;line-height:1.7;transition:border-color .2s;}
+  .fta:focus{border-color:var(--accent);}
+  .fta::placeholder{color:var(--text3);}
+  .tw{position:relative;}
+  .stt-btn{position:absolute;bottom:10px;right:10px;display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface2);color:var(--text2);font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .2s;}
+  .stt-btn.on{border-color:#e04040;background:rgba(224,64,64,.08);color:#e04040;animation:pb 1s infinite;}
+  @keyframes pb{0%,100%{box-shadow:0 0 0 0 rgba(224,64,64,.3)}50%{box-shadow:0 0 0 6px rgba(224,64,64,0)}}
+  .stt-dot{width:8px;height:8px;border-radius:50%;background:currentColor;}
+  .stt-btn.on .stt-dot{animation:bl .7s infinite;}
+  @keyframes bl{0%,100%{opacity:1}50%{opacity:.2}}
+  .tag-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .tag-opt{padding:7px 14px;border-radius:20px;font-size:13px;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s;}
+  .tag-opt.sel{border-color:var(--accent);background:rgba(184,137,78,.12);color:var(--accent);font-weight:700;}
+  .col-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .col-opt{width:30px;height:30px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:border-color .15s;}
+  .col-opt.sel{border-color:var(--text);}
+  /* 사진 패널 */
+  .photo-panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;}
+  .add-media-btn{width:100%;padding:13px;border:1.5px dashed var(--border);border-radius:10px;background:none;color:var(--text3);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;font-family:inherit;}
+  .add-media-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px;}
+  .photo-thumb{aspect-ratio:1;border-radius:8px;overflow:hidden;position:relative;cursor:pointer;}
+  .photo-thumb img{width:100%;height:100%;object-fit:cover;}
+  .photo-del{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.6);border:none;color:#fff;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .vid-list{display:flex;flex-direction:column;gap:10px;margin-top:10px;}
+  .vid-item{border-radius:12px;overflow:hidden;background:var(--surface2);}
+  .vid-item video{width:100%;max-height:200px;object-fit:cover;display:block;}
+  .vid-footer{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;}
+  .vid-name{font-size:12px;color:var(--text2);}
+  .vid-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;}
+  input[type=file]{display:none;}
 
-  /* 태그 선택 */
-  .tag-row { display:flex; gap:8px; flex-wrap:wrap; }
-  .tag-opt {
-    padding:7px 14px; border-radius:20px; font-size:13px;
-    border:1.5px solid var(--border); background:var(--surface); color:var(--text2);
-    cursor:pointer; font-family:'Noto Sans KR',sans-serif; transition:all .15s;
-  }
-  .tag-opt.sel { border-color:var(--accent); background:rgba(184,137,78,.12); color:var(--accent); font-weight:700; }
-
-  /* 색상 선택 */
-  .color-row { display:flex; gap:10px; flex-wrap:wrap; }
-  .color-opt { width:30px; height:30px; border-radius:50%; cursor:pointer; border:3px solid transparent; transition:border-color .15s; }
-  .color-opt.sel { border-color:var(--text); }
-
-  /* ════ PAGE 3 : 일기 뷰 ════ */
-  #page-entry { }
-  .entry-header { padding:18px 16px 14px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--border); background:var(--surface); position:sticky; top:0; z-index:10; }
-  .entry-date-main { font-size:17px; font-weight:600; }
-  .entry-date-sub  { font-size:11px; color:var(--text3); margin-top:1px; }
-  .entry-body { padding:16px; padding-bottom:40px; }
-  .section-label { font-size:11px; color:var(--text3); letter-spacing:1px; font-weight:600; text-transform:uppercase; margin-bottom:10px; }
-
-  /* 기분 */
-  .mood-row { display:flex; gap:8px; margin-bottom:16px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none; }
-  .mood-row::-webkit-scrollbar { display:none; }
-  .mood-chip { flex-shrink:0; padding:6px 14px; border-radius:20px; border:1px solid var(--border); background:var(--surface); color:var(--text2); font-size:13px; cursor:pointer; transition:all .15s; white-space:nowrap; }
-  .mood-chip.selected { border-color:var(--accent); background:rgba(200,169,110,.15); color:var(--accent); }
-
-  /* 텍스트 */
-  .text-wrap { position:relative; margin-bottom:14px; }
-  .diary-textarea { width:100%; min-height:140px; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px 14px 48px; color:var(--text); font-size:15px; line-height:1.7; resize:none; font-family:'Noto Sans KR',sans-serif; outline:none; transition:border-color .2s; }
-  .diary-textarea:focus { border-color:var(--accent); }
-  .diary-textarea::placeholder { color:var(--text3); }
-  .stt-btn { position:absolute; bottom:10px; right:10px; display:flex; align-items:center; gap:6px; padding:7px 14px; border-radius:20px; border:1.5px solid var(--border); background:var(--surface2); color:var(--text2); font-size:12px; font-weight:500; cursor:pointer; font-family:'Noto Sans KR',sans-serif; transition:all .2s; }
-  .stt-btn.listening { border-color:#e04040; background:rgba(224,64,64,.08); color:#e04040; animation:pulse-border 1s infinite; }
-  @keyframes pulse-border{0%,100%{box-shadow:0 0 0 0 rgba(224,64,64,.3)}50%{box-shadow:0 0 0 6px rgba(224,64,64,0)}}
-  .stt-dot { width:8px; height:8px; border-radius:50%; background:currentColor; }
-  .stt-btn.listening .stt-dot { animation:blink .7s infinite; }
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-
+  /* ══ PAGE 3 : 일기 ══ */
+  .entry-body{padding:16px;padding-bottom:40px;}
+  .sec-lbl{font-size:11px;color:var(--text3);letter-spacing:1px;font-weight:600;text-transform:uppercase;margin-bottom:10px;}
+  .mood-row{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+  .mood-row::-webkit-scrollbar{display:none;}
+  .mood-chip{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:13px;cursor:pointer;white-space:nowrap;}
+  .mood-chip.sel{border-color:var(--accent);background:rgba(200,169,110,.15);color:var(--accent);}
+  .diary-ta{width:100%;min-height:140px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 14px 48px;color:var(--text);font-size:15px;line-height:1.7;resize:none;font-family:inherit;outline:none;transition:border-color .2s;}
+  .diary-ta:focus{border-color:var(--accent);}
+  .diary-ta::placeholder{color:var(--text3);}
   /* 음성 */
-  .voice-panel { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:14px; }
-  .voice-controls { display:flex; align-items:center; gap:12px; }
-  .rec-btn { width:48px; height:48px; border-radius:50%; border:none; background:#c86ea8; color:#fff; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform .15s,background .2s; flex-shrink:0; }
-  .rec-btn.recording { background:#e04040; animation:pulse 1s infinite; }
+  .vp{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;}
+  .vc{display:flex;align-items:center;gap:12px;}
+  .rec-btn{width:48px;height:48px;border-radius:50%;border:none;background:#c86ea8;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .rec-btn.on{background:#e04040;animation:pulse 1s infinite;}
   @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(224,64,64,.4)}50%{box-shadow:0 0 0 10px rgba(224,64,64,0)}}
-  .rec-info { flex:1; }
-  .rec-status { font-size:13px; color:var(--text2); }
-  .rec-time { font-size:22px; font-weight:300; font-variant-numeric:tabular-nums; }
-  .voice-list { margin-top:12px; display:flex; flex-direction:column; gap:8px; }
-  .voice-item { display:flex; align-items:center; gap:10px; background:var(--surface2); border-radius:10px; padding:10px 12px; }
-  .play-btn { width:32px; height:32px; border-radius:50%; border:none; background:#6ea8c8; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0; }
-  .voice-meta { flex:1; }
-  .voice-name { font-size:12px; color:var(--text2); }
-  .voice-dur  { font-size:11px; color:var(--text3); }
-  .del-btn { background:none; border:none; color:var(--text3); cursor:pointer; font-size:16px; padding:4px; }
-  .del-btn:hover { color:#e04040; }
-  .waveform { height:24px; display:flex; align-items:center; gap:2px; }
-  .wave-bar { width:3px; background:#c86ea8; border-radius:2px; animation:wave .8s ease-in-out infinite; }
-  .wave-bar:nth-child(1){animation-delay:0s;height:8px}.wave-bar:nth-child(2){animation-delay:.1s;height:16px}.wave-bar:nth-child(3){animation-delay:.2s;height:12px}.wave-bar:nth-child(4){animation-delay:.3s;height:20px}.wave-bar:nth-child(5){animation-delay:.4s;height:10px}.wave-bar:nth-child(6){animation-delay:.5s;height:18px}
+  .ri{flex:1;}.rs{font-size:13px;color:var(--text2);}.rt{font-size:22px;font-weight:300;font-variant-numeric:tabular-nums;}
+  .wf{height:24px;display:flex;align-items:center;gap:2px;}
+  .wb{width:3px;background:#c86ea8;border-radius:2px;animation:wave .8s ease-in-out infinite;}
+  .wb:nth-child(1){animation-delay:0s;height:8px}.wb:nth-child(2){animation-delay:.1s;height:16px}.wb:nth-child(3){animation-delay:.2s;height:12px}.wb:nth-child(4){animation-delay:.3s;height:20px}.wb:nth-child(5){animation-delay:.4s;height:10px}.wb:nth-child(6){animation-delay:.5s;height:18px}
   @keyframes wave{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.4)}}
+  .voice-list{margin-top:12px;display:flex;flex-direction:column;gap:8px;}
+  .voice-item{display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:10px;padding:10px 12px;}
+  .play-btn{width:32px;height:32px;border-radius:50%;border:none;background:#6ea8c8;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+  .vm{flex:1;}.vn{font-size:12px;color:var(--text2);}.vd{font-size:11px;color:var(--text3);}
+  .del-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:4px;}
+  .del-btn:hover{color:#e04040;}
+  /* 이날 사건 미니 */
+  .mini-ev{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+  .mini-ev-item{display:flex;align-items:center;gap:8px;background:var(--surface);border-radius:10px;padding:8px 12px;cursor:pointer;}
+  .mini-ev-item:hover{opacity:.8;}
+  .mini-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .mini-txt{flex:1;font-size:13px;color:var(--text);}
+  .mini-tag{font-size:10px;color:#fff;padding:2px 7px;border-radius:10px;font-weight:600;}
 
-  /* 사진/동영상 */
-  .photo-panel { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:14px; }
-  .photo-add-btn { width:100%; padding:14px; border:1.5px dashed var(--border); border-radius:10px; background:none; color:var(--text3); font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all .2s; font-family:'Noto Sans KR',sans-serif; }
-  .photo-add-btn:hover { border-color:var(--accent); color:var(--accent); }
-  #photo-input,#video-input { display:none; }
-  .photo-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:10px; }
-  .photo-thumb { aspect-ratio:1; border-radius:8px; overflow:hidden; position:relative; cursor:pointer; }
-  .photo-thumb img { width:100%; height:100%; object-fit:cover; }
-  .photo-del { position:absolute; top:4px; right:4px; width:20px; height:20px; border-radius:50%; background:rgba(0,0,0,.6); border:none; color:#fff; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-  .video-list { display:flex; flex-direction:column; gap:10px; margin-top:10px; }
-  .video-item { border-radius:12px; overflow:hidden; background:var(--surface2); }
-  .video-item video { width:100%; max-height:200px; object-fit:cover; display:block; border-radius:12px 12px 0 0; }
-  .video-footer { display:flex; align-items:center; justify-content:space-between; padding:8px 12px; }
-  .video-name { font-size:12px; color:var(--text2); }
-  .video-del { background:none; border:none; color:var(--text3); cursor:pointer; font-size:16px; }
+  /* ══ PAGE 4 : 사건 상세 ══ */
+  .detail-body{padding:20px 16px;padding-bottom:40px;}
+  .detail-hero{border-radius:14px;padding:16px;margin-bottom:20px;border-left:5px solid var(--accent);}
+  .detail-date{font-size:13px;color:var(--text2);margin-bottom:6px;}
+  .detail-title{font-size:20px;font-weight:700;color:var(--text);line-height:1.4;margin-bottom:8px;}
+  .detail-tag{display:inline-block;font-size:11px;color:#fff;padding:3px 12px;border-radius:12px;font-weight:600;}
+  .detail-memo{background:var(--surface);border-radius:12px;padding:14px;font-size:14px;color:var(--text2);line-height:1.8;white-space:pre-wrap;margin-bottom:20px;border:1px solid var(--border);}
+  .detail-sec{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
 
-  /* 일기 뷰 내 사건 미니 리스트 */
-  .entry-event-mini { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
-  .entry-event-mini-item { display:flex; align-items:center; gap:8px; background:var(--surface); border-radius:10px; padding:8px 12px; }
-  .mini-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-  .mini-text { flex:1; font-size:13px; color:var(--text); }
-  .mini-tag  { font-size:10px; color:#fff; padding:2px 7px; border-radius:10px; font-weight:600; }
+  /* 라이트박스 */
+  #lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:200;align-items:center;justify-content:center;}
+  #lb.open{display:flex;}
+  #lb img{max-width:92vw;max-height:85vh;border-radius:10px;}
+  #lb-close{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.1);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 
-  /* Lightbox */
-  #lightbox { display:none; position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:200; align-items:center; justify-content:center; }
-  #lightbox.open { display:flex; }
-  #lightbox img { max-width:92vw; max-height:85vh; border-radius:10px; }
-  #lightbox-close { position:absolute; top:20px; right:20px; background:rgba(255,255,255,.1); border:none; color:#fff; width:40px; height:40px; border-radius:50%; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-
-  /* Toast */
-  #toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(60px); background:var(--accent); color:#fff; padding:10px 20px; border-radius:20px; font-size:13px; font-weight:600; transition:transform .3s; z-index:300; white-space:nowrap; pointer-events:none; }
-  #toast.show { transform:translateX(-50%) translateY(0); }
-
-  /* save btn */
-  .entry-save-btn { padding:8px 18px; background:var(--accent); color:#fff; border:none; border-radius:20px; font-size:13px; font-weight:700; cursor:pointer; font-family:'Noto Sans KR',sans-serif; }
+  /* 토스트 */
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--accent);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;transition:transform .3s;z-index:300;white-space:nowrap;pointer-events:none;}
+  #toast.show{transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 
-<!-- ════════ PAGE 1 : 메인 캘린더 ════════ -->
-<div id="page-main" class="page active">
+<!-- ══ PAGE 1 : 메인 ══ -->
+<div id="p1" class="page active">
   <div class="app-header">
     <div class="app-title">기록들</div>
-    <div class="app-subtitle">나의 하루를 담다</div>
+    <div class="app-sub">나의 하루를 담다</div>
   </div>
   <div class="month-nav">
-    <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
-    <div class="month-label" id="month-label"></div>
-    <button class="nav-btn" onclick="changeMonth(1)">›</button>
+    <button class="nav-btn" onclick="chMonth(-1)">‹</button>
+    <div class="month-lbl" id="monthLbl"></div>
+    <button class="nav-btn" onclick="chMonth(1)">›</button>
   </div>
   <div class="weekdays">
     <div class="weekday">일</div><div class="weekday">월</div><div class="weekday">화</div>
     <div class="weekday">수</div><div class="weekday">목</div><div class="weekday">금</div><div class="weekday">토</div>
   </div>
-  <div class="calendar-grid" id="calendar-grid"></div>
+  <div class="cal-grid" id="calGrid"></div>
 
-  <!-- 그날의 사건들 -->
-  <div class="events-strip">
-    <div class="strip-header">
+  <div class="ev-strip">
+    <div class="strip-hd">
       <div class="strip-title">📌 그날의 사건들</div>
-      <button class="strip-add-btn" onclick="goAddEvent()">＋ 추가</button>
+      <button class="strip-add" onclick="goAdd()">＋ 추가</button>
     </div>
-    <!-- 카드 병렬 나열 -->
-    <div class="events-grid" id="events-grid"></div>
-    <div id="events-empty" class="empty-events" style="display:none">아직 기록된 사건이 없어요 📌</div>
+    <div class="ev-grid" id="evGrid"></div>
+    <div id="evEmpty" class="ev-empty" style="display:none">아직 기록된 사건이 없어요 📌</div>
   </div>
 </div>
 
-<!-- ════════ PAGE 2 : 사건 추가 ════════ -->
-<div id="page-add-event" class="page">
-  <div class="page-header">
-    <button class="back-btn" onclick="goBack('page-main')">←</button>
-    <div class="page-title">사건 추가</div>
-    <button class="page-save-btn" onclick="saveEvent()">저장</button>
+<!-- ══ PAGE 2 : 사건 추가 ══ -->
+<div id="p2" class="page">
+  <div class="ph">
+    <button class="back-btn" onclick="go('p1')">←</button>
+    <div class="ph-title">사건 추가</div>
+    <button class="ph-btn" onclick="saveEv()">저장</button>
   </div>
   <div class="add-body">
-
     <div class="field">
-      <label class="field-label">날짜</label>
-      <input type="date" id="ev-date" class="field-input">
+      <div class="field-lbl">날짜</div>
+      <input type="date" id="ev-date" class="fi">
     </div>
-
     <div class="field">
-      <label class="field-label">사건 제목 <span style="color:var(--text3);font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">(선택)</span></label>
-      <input type="text" id="ev-title" class="field-input" placeholder="제목을 입력하거나 비워두세요" maxlength="80">
+      <div class="field-lbl">사건 제목 <span class="field-opt">(선택)</span></div>
+      <input type="text" id="ev-title" class="fi" placeholder="제목을 입력하거나 비워두세요" maxlength="80">
     </div>
-
     <div class="field">
-      <label class="field-label">메모 <span style="color:var(--text3);font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">(선택)</span></label>
-      <div class="text-wrap" style="margin-bottom:0">
-        <textarea id="ev-memo" class="field-textarea" placeholder="간단한 메모를 남겨보세요..."></textarea>
+      <div class="field-lbl">내용 <span class="field-opt">(선택)</span></div>
+      <div class="tw">
+        <textarea id="ev-memo" class="fta" placeholder="추억을 기록해 보세요..."></textarea>
         <button class="stt-btn" id="ev-stt-btn" onclick="toggleEvSTT()">
-          <span class="stt-dot"></span>
-          <span id="ev-stt-label">음성으로 입력</span>
+          <span class="stt-dot"></span><span id="ev-stt-lbl">음성으로 입력</span>
         </button>
       </div>
     </div>
-
     <div class="field">
-      <label class="field-label">사진 <span style="color:var(--text3);font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">(선택)</span></label>
-      <div class="photo-panel" style="margin-bottom:0">
-        <button class="photo-add-btn" onclick="document.getElementById('ev-photo-input').click()">📷 사진 추가</button>
-        <input type="file" id="ev-photo-input" accept="image/*" multiple onchange="addEvPhotos(this)">
-        <div class="photo-grid" id="ev-photo-grid"></div>
+      <div class="field-lbl">사진 <span class="field-opt">(선택)</span></div>
+      <div class="photo-panel">
+        <button class="add-media-btn" onclick="document.getElementById('ev-pi').click()">📷 사진 추가</button>
+        <input type="file" id="ev-pi" accept="image/*" multiple onchange="addEvPhotos(this)">
+        <div class="photo-grid" id="ev-pg"></div>
       </div>
     </div>
-
     <div class="field">
-      <label class="field-label">동영상 <span style="color:var(--text3);font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">(선택)</span></label>
-      <div class="photo-panel" style="margin-bottom:0">
-        <button class="photo-add-btn" onclick="document.getElementById('ev-video-input').click()">🎬 동영상 추가</button>
-        <input type="file" id="ev-video-input" accept="video/*" multiple onchange="addEvVideos(this)">
-        <div class="video-list" id="ev-video-list"></div>
+      <div class="field-lbl">동영상 <span class="field-opt">(선택)</span></div>
+      <div class="photo-panel">
+        <button class="add-media-btn" onclick="document.getElementById('ev-vi').click()">🎬 동영상 추가</button>
+        <input type="file" id="ev-vi" accept="video/*" multiple onchange="addEvVideos(this)">
+        <div class="vid-list" id="ev-vl"></div>
       </div>
     </div>
-
     <div class="field">
-      <label class="field-label">카테고리</label>
+      <div class="field-lbl">카테고리</div>
       <div class="tag-row" id="ev-tags">
         <span class="tag-opt sel" data-tag="일상">일상</span>
         <span class="tag-opt" data-tag="여행">여행</span>
@@ -295,608 +241,471 @@
         <span class="tag-opt" data-tag="기타">기타</span>
       </div>
     </div>
-
     <div class="field">
-      <label class="field-label">색상</label>
-      <div class="color-row" id="ev-colors">
-        <div class="color-opt sel" data-color="#4a7fb5" style="background:#4a7fb5"></div>
-        <div class="color-opt" data-color="#3a8a5a" style="background:#3a8a5a"></div>
-        <div class="color-opt" data-color="#c05050" style="background:#c05050"></div>
-        <div class="color-opt" data-color="#7a5ab5" style="background:#7a5ab5"></div>
-        <div class="color-opt" data-color="#c87a30" style="background:#c87a30"></div>
-        <div class="color-opt" data-color="#b8894e" style="background:#b8894e"></div>
+      <div class="field-lbl">색상</div>
+      <div class="col-row" id="ev-cols">
+        <div class="col-opt sel" data-color="#4a7fb5" style="background:#4a7fb5"></div>
+        <div class="col-opt" data-color="#3a8a5a" style="background:#3a8a5a"></div>
+        <div class="col-opt" data-color="#c05050" style="background:#c05050"></div>
+        <div class="col-opt" data-color="#7a5ab5" style="background:#7a5ab5"></div>
+        <div class="col-opt" data-color="#c87a30" style="background:#c87a30"></div>
+        <div class="col-opt" data-color="#b8894e" style="background:#b8894e"></div>
       </div>
     </div>
-
   </div>
 </div>
 
-<!-- ════════ PAGE 3 : 일기 뷰 ════════ -->
-<div id="page-entry" class="page">
-  <div class="entry-header">
+<!-- ══ PAGE 3 : 일기 뷰 ══ -->
+<div id="p3" class="page">
+  <div class="ph">
     <button class="back-btn" onclick="closeEntry()">←</button>
     <div style="flex:1">
-      <div class="entry-date-main" id="entry-date-main"></div>
-      <div class="entry-date-sub"  id="entry-date-sub"></div>
+      <div id="e-date-main" style="font-size:17px;font-weight:600;"></div>
+      <div id="e-date-sub"  style="font-size:11px;color:var(--text3);margin-top:1px;"></div>
     </div>
-    <button class="entry-save-btn" onclick="saveEntry()">저장</button>
+    <button class="ph-btn" onclick="saveEntry()">저장</button>
   </div>
   <div class="entry-body">
-
-    <!-- 이날의 사건 미니 뷰 -->
-    <div id="entry-events-section" style="display:none;margin-bottom:16px;">
-      <div class="section-label">📌 이날의 사건</div>
-      <div class="entry-event-mini" id="entry-event-mini"></div>
+    <!-- 이날 사건 미니 -->
+    <div id="e-ev-sec" style="display:none;margin-bottom:16px;">
+      <div class="sec-lbl">📌 이날의 사건</div>
+      <div class="mini-ev" id="e-ev-mini"></div>
     </div>
-
-    <div class="section-label">오늘의 기분</div>
+    <div class="sec-lbl">오늘의 기분</div>
     <div class="mood-row" id="mood-row">
-      <div class="mood-chip" onclick="selectMood(this)" data-mood="😊 행복">😊 행복</div>
-      <div class="mood-chip" onclick="selectMood(this)" data-mood="😌 평온">😌 평온</div>
-      <div class="mood-chip" onclick="selectMood(this)" data-mood="😔 슬픔">😔 슬픔</div>
-      <div class="mood-chip" onclick="selectMood(this)" data-mood="😤 화남">😤 화남</div>
-      <div class="mood-chip" onclick="selectMood(this)" data-mood="😰 불안">😰 불안</div>
-      <div class="mood-chip" onclick="selectMood(this)" data-mood="🥳 신남">🥳 신남</div>
-      <div class="mood-chip" onclick="selectMood(this)" data-mood="😴 피곤">😴 피곤</div>
+      <div class="mood-chip" onclick="selMood(this)" data-mood="😊 행복">😊 행복</div>
+      <div class="mood-chip" onclick="selMood(this)" data-mood="😌 평온">😌 평온</div>
+      <div class="mood-chip" onclick="selMood(this)" data-mood="😔 슬픔">😔 슬픔</div>
+      <div class="mood-chip" onclick="selMood(this)" data-mood="😤 화남">😤 화남</div>
+      <div class="mood-chip" onclick="selMood(this)" data-mood="😰 불안">😰 불안</div>
+      <div class="mood-chip" onclick="selMood(this)" data-mood="🥳 신남">🥳 신남</div>
+      <div class="mood-chip" onclick="selMood(this)" data-mood="😴 피곤">😴 피곤</div>
     </div>
-
-    <div class="section-label">오늘의 기록</div>
-    <div class="text-wrap">
-      <textarea class="diary-textarea" id="diary-text" placeholder="오늘 어떤 하루였나요? 자유롭게 적어보세요..."></textarea>
+    <div class="sec-lbl">오늘의 기록</div>
+    <div class="tw" style="margin-bottom:14px;">
+      <textarea class="diary-ta" id="diary-text" placeholder="오늘 어떤 하루였나요?"></textarea>
       <button class="stt-btn" id="stt-btn" onclick="toggleSTT()">
-        <span class="stt-dot"></span>
-        <span id="stt-label">음성으로 입력</span>
+        <span class="stt-dot"></span><span id="stt-lbl">음성으로 입력</span>
       </button>
     </div>
-
-    <div class="section-label">음성 메모</div>
-    <div class="voice-panel">
-      <div class="voice-controls">
-        <button class="rec-btn" id="rec-btn" onclick="toggleRecord()">🎙️</button>
-        <div class="rec-info">
-          <div class="rec-status" id="rec-status">버튼을 눌러 녹음 시작</div>
-          <div class="rec-time"   id="rec-time">0:00</div>
+    <div class="sec-lbl">음성 메모</div>
+    <div class="vp">
+      <div class="vc">
+        <button class="rec-btn" id="rec-btn" onclick="toggleRec()">🎙️</button>
+        <div class="ri">
+          <div class="rs" id="rec-status">버튼을 눌러 녹음 시작</div>
+          <div class="rt" id="rec-time">0:00</div>
         </div>
-        <div class="waveform" id="waveform" style="display:none">
-          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wf" id="wf" style="display:none">
+          <div class="wb"></div><div class="wb"></div><div class="wb"></div>
+          <div class="wb"></div><div class="wb"></div><div class="wb"></div>
         </div>
       </div>
       <div class="voice-list" id="voice-list"></div>
     </div>
-
-    <div class="section-label">사진</div>
-    <div class="photo-panel">
-      <button class="photo-add-btn" onclick="document.getElementById('photo-input').click()">📷 사진 추가</button>
-      <input type="file" id="photo-input" accept="image/*" multiple onchange="addPhotos(this)">
-      <div class="photo-grid" id="photo-grid"></div>
+    <div class="sec-lbl">사진</div>
+    <div class="photo-panel" style="margin-bottom:14px;">
+      <button class="add-media-btn" onclick="document.getElementById('e-pi').click()">📷 사진 추가</button>
+      <input type="file" id="e-pi" accept="image/*" multiple onchange="addEntryPhotos(this)">
+      <div class="photo-grid" id="e-pg"></div>
     </div>
-
-    <div class="section-label">동영상</div>
+    <div class="sec-lbl">동영상</div>
     <div class="photo-panel">
-      <button class="photo-add-btn" onclick="document.getElementById('video-input').click()">🎬 동영상 추가</button>
-      <input type="file" id="video-input" accept="video/*" multiple onchange="addVideos(this)">
-      <div class="video-list" id="video-list"></div>
+      <button class="add-media-btn" onclick="document.getElementById('e-vi').click()">🎬 동영상 추가</button>
+      <input type="file" id="e-vi" accept="video/*" multiple onchange="addEntryVideos(this)">
+      <div class="vid-list" id="e-vl"></div>
     </div>
   </div>
 </div>
 
-<!-- Lightbox -->
-<div id="lightbox" onclick="closeLightbox()">
-  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
-  <img id="lightbox-img" src="" alt="">
+<!-- ══ PAGE 4 : 사건 상세 ══ -->
+<div id="p4" class="page">
+  <div class="ph">
+    <button class="back-btn" onclick="go('p1')">←</button>
+    <div class="ph-title" id="d-ph-title">사건 상세</div>
+    <button class="ph-del" onclick="delCurEv()">삭제</button>
+  </div>
+  <div class="detail-body">
+    <div class="detail-hero" id="d-hero">
+      <div class="detail-date" id="d-date"></div>
+      <div class="detail-title" id="d-title"></div>
+      <span class="detail-tag" id="d-tag"></span>
+    </div>
+    <div id="d-memo-wrap" style="display:none">
+      <div class="detail-sec">내용</div>
+      <div class="detail-memo" id="d-memo"></div>
+    </div>
+    <div id="d-photo-wrap" style="display:none">
+      <div class="detail-sec">사진</div>
+      <div class="photo-grid" id="d-pg" style="margin-bottom:20px;"></div>
+    </div>
+    <div id="d-vid-wrap" style="display:none">
+      <div class="detail-sec">동영상</div>
+      <div class="vid-list" id="d-vl"></div>
+    </div>
+    <div id="d-empty" style="display:none;color:var(--text3);font-size:13px;text-align:center;padding:20px 0;">저장된 내용이 없어요</div>
+  </div>
+</div>
+
+<!-- 라이트박스 -->
+<div id="lb" onclick="closeLb()">
+  <button id="lb-close" onclick="closeLb()">✕</button>
+  <img id="lb-img" src="" alt="">
 </div>
 <div id="toast"></div>
 
-<!-- ════════ PAGE 4 : 사건 상세 ════════ -->
-<div id="page-event-detail" class="page">
-  <div class="page-header">
-    <button class="back-btn" onclick="goBack('page-main')">←</button>
-    <div class="page-title" id="detail-page-title">사건 상세</div>
-    <button onclick="deleteCurrentEvent()" style="background:none;border:none;color:#c05050;font-size:13px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;padding:8px;">삭제</button>
-  </div>
-  <div class="add-body" id="detail-body">
-    <!-- JS로 채워짐 -->
-  </div>
-</div>
-
 <script>
-// ── STATE ──
-let currentDate  = new Date();
-let viewYear     = currentDate.getFullYear();
-let viewMonth    = currentDate.getMonth();
-let selectedKey  = null;   // 현재 열린 일기 날짜
-let entries      = {};     // { "2026-06-29": { mood, text, voices, photos, videos } }
-let mainEvents   = [];     // [{ id, date, title, memo, tag, color }]
+// ── 상태 ──
+let now = new Date(), vy = now.getFullYear(), vm = now.getMonth();
+let selKey = null;
+let entries = {};    // { "2026-06-29": { mood, text, voices:[], photos:[], videos:[] } }
+let events  = [];    // [{ id, date, title, memo, tag, color, photos:[], videos:[] }]
+let evPhotos=[], evVideos=[];           // 추가 폼 임시
+let curEvId = null;                     // 상세 뷰 현재 ID
 
-let mediaRecorder=null, audioChunks=[], isRecording=false;
-let recTimer=null, recSeconds=0;
-let recognition=null, isListening=false;
+let mr=null, ac=[], isRec=false, rt=null, rs=0;
+let recog=null, isSTT=false;
+let evRecog=null, isEvSTT=false;
 
-const MONTHS  = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-const DAYS_KO = ['일','월','화','수','목','금','토'];
-function dateKey(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
-function todayKey(){ const d=new Date(); return dateKey(d.getFullYear(),d.getMonth(),d.getDate()); }
+const MO=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+const DK=['일','월','화','수','목','금','토'];
+const dk=(y,m,d)=>`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+const todayK=()=>{const d=new Date();return dk(d.getFullYear(),d.getMonth(),d.getDate());};
 
-// ── 페이지 전환 ──
-function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const p=document.getElementById(id);
-  p.classList.add('active');
-  p.scrollTop=0;
+// ── 페이지 ──
+function go(id){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); const p=document.getElementById(id); p.classList.add('active'); p.scrollTop=0; }
+
+// ── 저장소 ──
+async function load(){
+  try{const r=await window.storage.get('diary-entries');    if(r) entries=JSON.parse(r.value);}catch(e){entries={};}
+  try{const r=await window.storage.get('diary-events');     if(r) events=JSON.parse(r.value);}catch(e){events=[];}
+  renderCal(); renderEvGrid();
 }
-function goBack(to){ showPage(to); }
+async function saveEntries(){ try{await window.storage.set('diary-entries',JSON.stringify(entries));}catch(e){} }
+async function saveEvents(){  try{await window.storage.set('diary-events', JSON.stringify(events)); }catch(e){} }
 
-// ── STORAGE ──
-async function loadData(){
-  try { const r=await window.storage.get('diary-entries');    if(r) entries=JSON.parse(r.value); } catch(e){ entries={}; }
-  try { const r=await window.storage.get('diary-mainevents'); if(r) mainEvents=JSON.parse(r.value); } catch(e){ mainEvents=[]; }
-  renderCalendar();
-  renderEventsGrid();
-}
-async function persistEntries(){    try{ await window.storage.set('diary-entries',    JSON.stringify(entries));    }catch(e){} }
-async function persistMainEvents(){ try{ await window.storage.set('diary-mainevents', JSON.stringify(mainEvents)); }catch(e){} }
-
-// ── CALENDAR ──
-function renderCalendar(){
-  document.getElementById('month-label').textContent=`${viewYear}년 ${MONTHS[viewMonth]}`;
-  const grid=document.getElementById('calendar-grid');
-  grid.innerHTML='';
-  const first=new Date(viewYear,viewMonth,1).getDay();
-  const days =new Date(viewYear,viewMonth+1,0).getDate();
-  const today=currentDate;
-  for(let i=0;i<first;i++){ const c=document.createElement('div');c.className='day-cell empty';grid.appendChild(c); }
+// ── 달력 ──
+function renderCal(){
+  document.getElementById('monthLbl').textContent=`${vy}년 ${MO[vm]}`;
+  const grid=document.getElementById('calGrid'); grid.innerHTML='';
+  const first=new Date(vy,vm,1).getDay(), days=new Date(vy,vm+1,0).getDate();
+  for(let i=0;i<first;i++){const c=document.createElement('div');c.className='day-cell empty';grid.appendChild(c);}
   for(let d=1;d<=days;d++){
-    const key=dateKey(viewYear,viewMonth,d);
+    const key=dk(vy,vm,d), dow=new Date(vy,vm,d).getDay();
     const cell=document.createElement('div');
-    const dow=new Date(viewYear,viewMonth,d).getDay();
     let cls='day-cell';
-    if(dow===0) cls+=' sunday';
-    if(dow===6) cls+=' saturday';
-    if(d===today.getDate()&&viewMonth===today.getMonth()&&viewYear===today.getFullYear()) cls+=' today';
-    cell.className=cls;
-    cell.onclick=()=>openEntry(key);
-    const num=document.createElement('div'); num.className='day-num'; num.textContent=d;
-    cell.appendChild(num);
-    const e=entries[key];
-    const hasEv=mainEvents.some(ev=>ev.date===key);
+    if(dow===0)cls+=' sunday'; if(dow===6)cls+=' saturday';
+    if(d===now.getDate()&&vm===now.getMonth()&&vy===now.getFullYear())cls+=' today';
+    cell.className=cls; cell.onclick=()=>openEntry(key);
+    const num=document.createElement('div'); num.className='day-num'; num.textContent=d; cell.appendChild(num);
+    const e=entries[key], hasEv=events.some(ev=>ev.date===key);
     if(e||hasEv){
-      const dots=document.createElement('div'); dots.className='entry-dots';
-      if(e&&e.text){const dot=document.createElement('div');dot.className='dot text';dots.appendChild(dot);}
-      if(e&&e.voices&&e.voices.length){const dot=document.createElement('div');dot.className='dot voice';dots.appendChild(dot);}
-      if(e&&e.photos&&e.photos.length){const dot=document.createElement('div');dot.className='dot photo';dots.appendChild(dot);}
-      if(e&&e.videos&&e.videos.length){const dot=document.createElement('div');dot.className='dot video';dots.appendChild(dot);}
-      if(hasEv){const dot=document.createElement('div');dot.className='dot event';dots.appendChild(dot);}
-      if(dots.children.length) cell.appendChild(dots);
+      const dots=document.createElement('div'); dots.className='edots';
+      if(e&&e.text){const dot=document.createElement('div');dot.className='dot t';dots.appendChild(dot);}
+      if(e&&e.voices&&e.voices.length){const dot=document.createElement('div');dot.className='dot v';dots.appendChild(dot);}
+      if(e&&e.photos&&e.photos.length){const dot=document.createElement('div');dot.className='dot p';dots.appendChild(dot);}
+      if(hasEv){const dot=document.createElement('div');dot.className='dot e';dots.appendChild(dot);}
+      if(dots.children.length)cell.appendChild(dots);
     }
     grid.appendChild(cell);
   }
 }
-function changeMonth(dir){
-  viewMonth+=dir;
-  if(viewMonth>11){viewMonth=0;viewYear++;}
-  if(viewMonth<0) {viewMonth=11;viewYear--;}
-  renderCalendar();
-}
+function chMonth(d){ vm+=d; if(vm>11){vm=0;vy++;} if(vm<0){vm=11;vy--;} renderCal(); }
 
-// ── 사건들 그리드 ──
-function renderEventsGrid(){
-  const grid=document.getElementById('events-grid');
-  const empty=document.getElementById('events-empty');
+// ── 사건 그리드 ──
+function renderEvGrid(){
+  const grid=document.getElementById('evGrid'), empty=document.getElementById('evEmpty');
   grid.innerHTML='';
-  const sorted=[...mainEvents].sort((a,b)=>b.date.localeCompare(a.date));
-  if(!sorted.length){ empty.style.display='block'; return; }
-  empty.style.display='none';
+  const sorted=[...events].sort((a,b)=>b.date.localeCompare(a.date));
+  if(!sorted.length){empty.style.display='block';return;} empty.style.display='none';
   sorted.forEach(ev=>{
     const [y,m,d]=ev.date.split('-');
-    const card=document.createElement('div');
-    card.className='event-card';
-    card.style.borderLeftColor=ev.color;
-    const titleHtml = ev.title
-      ? `<div class="event-card-title">${ev.title}</div>`
-      : `<div class="event-card-title" style="font-size:18px;letter-spacing:4px;color:${ev.color}">···</div>`;
+    const card=document.createElement('div'); card.className='ev-card'; card.style.borderLeftColor=ev.color;
+    const titleHtml=ev.title
+      ?`<div class="ev-card-title">${ev.title}</div>`
+      :`<div class="ev-card-title" style="font-size:18px;letter-spacing:4px;color:${ev.color}">···</div>`;
     card.innerHTML=`
-      <div class="event-card-top">
+      <div class="ev-card-top">
         ${titleHtml}
-        <button class="event-card-del" onclick="event.stopPropagation();deleteEvent('${ev.id}')">✕</button>
+        <button class="ev-card-del" onclick="event.stopPropagation();delEv('${ev.id}')">✕</button>
       </div>
-      <div class="event-card-date">${y}.${m}.${d}</div>
-      <span class="event-card-tag" style="background:${ev.color}">${ev.tag}</span>`;
-    card.onclick = () => openEventDetail(ev.id);
+      <div class="ev-card-date">${y}.${m}.${d}</div>
+      <span class="ev-card-tag" style="background:${ev.color}">${ev.tag}</span>`;
+    card.onclick=()=>openEvDetail(ev.id);
     grid.appendChild(card);
   });
 }
 
-// ── 사건 추가 페이지 ──
-// 사건 추가 페이지용 임시 미디어
-let evPhotos = [];
-let evVideos = [];
-let evRecognition = null, evIsListening = false;
-
-function goAddEvent(){
-  document.getElementById('ev-date').value=todayKey();
+// ── 사건 추가 ──
+function goAdd(){
+  document.getElementById('ev-date').value=todayK();
   document.getElementById('ev-title').value='';
   document.getElementById('ev-memo').value='';
   evPhotos=[]; evVideos=[];
-  renderEvPhotoGrid(); renderEvVideoList();
+  renderEvPG(); renderEvVL();
   stopEvSTT();
-  // 태그/색상 초기화
   document.querySelectorAll('#ev-tags .tag-opt').forEach((t,i)=>t.classList.toggle('sel',i===0));
-  document.querySelectorAll('#ev-colors .color-opt').forEach((c,i)=>c.classList.toggle('sel',i===0));
-  showPage('page-add-event');
+  document.querySelectorAll('#ev-cols .col-opt').forEach((c,i)=>c.classList.toggle('sel',i===0));
+  go('p2');
 }
 
-function saveEvent(){
-  const date =document.getElementById('ev-date').value;
+function saveEv(){
+  const date=document.getElementById('ev-date').value;
+  if(!date){showToast('날짜를 선택해 주세요');return;}
   const title=document.getElementById('ev-title').value.trim();
   const memo =document.getElementById('ev-memo').value.trim();
-  if(!date){ showToast('날짜를 선택해 주세요'); return; }
   const tag  =document.querySelector('#ev-tags .tag-opt.sel')?.dataset.tag||'일상';
-  const color=document.querySelector('#ev-colors .color-opt.sel')?.dataset.color||'#4a7fb5';
+  const color=document.querySelector('#ev-cols .col-opt.sel')?.dataset.color||'#4a7fb5';
   stopEvSTT();
-  mainEvents.unshift({ id:Date.now().toString(), date, title, memo, tag, color, photos:[...evPhotos], videos:[...evVideos] });
-  persistMainEvents();
-  renderEventsGrid();
-  renderCalendar();
+  // 동영상은 objectURL이라 페이지 내에서만 재생 가능 - 파일명만 보관
+  events.unshift({id:Date.now().toString(),date,title,memo,tag,color,
+    photos:[...evPhotos], videos:evVideos.map(v=>({name:v.name,url:v.url,b64:v.b64||''}))});
+  saveEvents(); renderEvGrid(); renderCal();
   showToast('사건이 저장되었어요 📌');
-  showPage('page-main');
+  go('p1');
 }
 
-function deleteEvent(id){
-  mainEvents=mainEvents.filter(e=>e.id!==id);
-  persistMainEvents();
-  renderEventsGrid();
-  renderCalendar();
+function delEv(id){ events=events.filter(e=>e.id!==id); saveEvents(); renderEvGrid(); renderCal(); }
+
+// ── 사건 상세 뷰 ──
+function openEvDetail(id){
+  const ev=events.find(e=>e.id===id); if(!ev) return;
+  curEvId=id;
+  const [y,m,d]=ev.date.split('-'), dow=DK[new Date(+y,+m-1,+d).getDay()];
+  document.getElementById('d-ph-title').textContent=ev.title||'사건 상세';
+  // hero
+  const hero=document.getElementById('d-hero'); hero.style.background=ev.color+'18'; hero.style.borderLeftColor=ev.color;
+  document.getElementById('d-date').textContent=`${y}년 ${m}월 ${d}일 (${dow})`;
+  document.getElementById('d-title').textContent=ev.title||'(제목 없음)';
+  const dtag=document.getElementById('d-tag'); dtag.textContent=ev.tag; dtag.style.background=ev.color;
+  // 메모
+  const mw=document.getElementById('d-memo-wrap');
+  if(ev.memo){mw.style.display='block';document.getElementById('d-memo').textContent=ev.memo;}
+  else{mw.style.display='none';}
+  // 사진
+  const pw=document.getElementById('d-photo-wrap'), pg=document.getElementById('d-pg');
+  pg.innerHTML='';
+  if(ev.photos&&ev.photos.length){
+    pw.style.display='block';
+    ev.photos.forEach(src=>{
+      const t=document.createElement('div');t.className='photo-thumb';
+      t.innerHTML=`<img src="${src}" onclick="openLb('${src}')">`;
+      pg.appendChild(t);
+    });
+  }else{pw.style.display='none';}
+  // 동영상
+  const vw=document.getElementById('d-vid-wrap'), vl=document.getElementById('d-vl');
+  vl.innerHTML='';
+  if(ev.videos&&ev.videos.length){
+    vw.style.display='block';
+    ev.videos.forEach(v=>{
+      const item=document.createElement('div');item.className='vid-item';
+      // b64가 있으면 사용, 아니면 url(같은 세션이면 유효)
+      const src=v.b64||v.url||'';
+      item.innerHTML=`${src?`<video src="${src}" controls></video>`:'<div style="padding:12px;color:var(--text3);font-size:12px;">동영상은 저장 세션에서만 재생 가능해요</div>'}
+        <div class="vid-footer"><span class="vid-name">${v.name}</span></div>`;
+      vl.appendChild(item);
+    });
+  }else{vw.style.display='none';}
+  // 비어있을 때
+  const hasContent=ev.memo||(ev.photos&&ev.photos.length)||(ev.videos&&ev.videos.length);
+  document.getElementById('d-empty').style.display=hasContent?'none':'block';
+  go('p4');
 }
 
-// 태그/색상 클릭
-document.addEventListener('click',function(e){
-  if(e.target.classList.contains('tag-opt')){
-    e.target.closest('.tag-row').querySelectorAll('.tag-opt').forEach(t=>t.classList.remove('sel'));
-    e.target.classList.add('sel');
-  }
-  if(e.target.classList.contains('color-opt')){
-    e.target.closest('.color-row').querySelectorAll('.color-opt').forEach(c=>c.classList.remove('sel'));
-    e.target.classList.add('sel');
-  }
-});
+function delCurEv(){
+  if(!curEvId)return;
+  if(!confirm('이 사건을 삭제할까요?'))return;
+  delEv(curEvId); curEvId=null; go('p1');
+}
+
+// ── 사건 추가 STT ──
+function toggleEvSTT(){isEvSTT?stopEvSTT():startEvSTT();}
+function startEvSTT(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){showToast('이 브라우저는 음성인식을 지원하지 않아요');return;}
+  evRecog=new SR();evRecog.lang='ko-KR';evRecog.continuous=true;evRecog.interimResults=true;
+  const ta=document.getElementById('ev-memo'),base=ta.value;
+  evRecog.onresult=(e)=>{let f='',i='';for(let j=e.resultIndex;j<e.results.length;j++){if(e.results[j].isFinal)f+=e.results[j][0].transcript;else i+=e.results[j][0].transcript;}if(f)ta.value=base+(base?' ':'')+f;ta.placeholder=i||'추억을 기록해 보세요...';};
+  evRecog.onerror=()=>stopEvSTT();evRecog.onend=()=>{if(isEvSTT)evRecog.start();};
+  evRecog.start();isEvSTT=true;
+  document.getElementById('ev-stt-btn').classList.add('on');
+  document.getElementById('ev-stt-lbl').textContent='듣는 중... (탭해서 중지)';
+}
+function stopEvSTT(){
+  if(evRecog){evRecog.onend=null;evRecog.stop();evRecog=null;}
+  isEvSTT=false;
+  const b=document.getElementById('ev-stt-btn');if(b)b.classList.remove('on');
+  const l=document.getElementById('ev-stt-lbl');if(l)l.textContent='음성으로 입력';
+  const t=document.getElementById('ev-memo');if(t)t.placeholder='추억을 기록해 보세요...';
+}
+
+// ── 사건 추가 사진/동영상 ──
+function addEvPhotos(input){
+  Array.from(input.files).forEach(f=>{
+    const r=new FileReader();
+    r.onload=e=>{evPhotos.push(e.target.result);renderEvPG();};
+    r.readAsDataURL(f);
+  });input.value='';
+}
+function renderEvPG(){
+  const g=document.getElementById('ev-pg');g.innerHTML='';
+  evPhotos.forEach((src,i)=>{const t=document.createElement('div');t.className='photo-thumb';t.innerHTML=`<img src="${src}" onclick="openLb('${src}')"><button class="photo-del" onclick="evPhotos.splice(${i},1);renderEvPG()">✕</button>`;g.appendChild(t);});
+}
+function addEvVideos(input){
+  Array.from(input.files).forEach(f=>{
+    const url=URL.createObjectURL(f);
+    // 동영상은 base64로도 저장 시도 (크기 제한)
+    const r=new FileReader();
+    r.onload=e=>{ evVideos.push({name:f.name,url,b64:e.target.result}); renderEvVL(); };
+    r.onerror=()=>{ evVideos.push({name:f.name,url,b64:''}); renderEvVL(); };
+    if(f.size<10*1024*1024) r.readAsDataURL(f); // 10MB 이하만 base64
+    else { evVideos.push({name:f.name,url,b64:''}); renderEvVL(); }
+  });input.value='';
+}
+function renderEvVL(){
+  const el=document.getElementById('ev-vl');el.innerHTML='';
+  evVideos.forEach((v,i)=>{const item=document.createElement('div');item.className='vid-item';item.innerHTML=`<video src="${v.url}" controls></video><div class="vid-footer"><span class="vid-name">${v.name}</span><button class="vid-del" onclick="evVideos.splice(${i},1);renderEvVL()">🗑</button></div>`;el.appendChild(item);});
+}
 
 // ── 일기 뷰 ──
 function openEntry(key){
-  selectedKey=key;
-  const [y,m,d]=key.split('-');
-  const dt=new Date(+y,+m-1,+d);
-  document.getElementById('entry-date-main').textContent=`${y}년 ${m}월 ${d}일`;
-  document.getElementById('entry-date-sub').textContent=DAYS_KO[dt.getDay()]+'요일';
+  selKey=key;const [y,m,d]=key.split('-'),dt=new Date(+y,+m-1,+d);
+  document.getElementById('e-date-main').textContent=`${y}년 ${m}월 ${d}일`;
+  document.getElementById('e-date-sub').textContent=DK[dt.getDay()]+'요일';
   const e=entries[key]||{};
   document.getElementById('diary-text').value=e.text||'';
-  document.querySelectorAll('.mood-chip').forEach(c=>c.classList.toggle('selected',c.dataset.mood===e.mood));
-  renderVoiceList(e.voices||[]);
-  renderPhotoGrid(e.photos||[]);
-  renderVideoList(e.videos||[]);
-  // 이날 사건 미니 뷰
-  const dayEvents=mainEvents.filter(ev=>ev.date===key);
-  const sec=document.getElementById('entry-events-section');
-  const mini=document.getElementById('entry-event-mini');
-  if(dayEvents.length){
-    sec.style.display='block';
-    mini.innerHTML='';
-    dayEvents.forEach(ev=>{
-      const item=document.createElement('div'); item.className='entry-event-mini-item';
+  document.querySelectorAll('.mood-chip').forEach(c=>c.classList.toggle('sel',c.dataset.mood===e.mood));
+  renderVL(e.voices||[]); renderEntryPG(e.photos||[]); renderEntryVL(e.videos||[]);
+  // 이날 사건
+  const dayEvs=events.filter(ev=>ev.date===key);
+  const sec=document.getElementById('e-ev-sec'),mini=document.getElementById('e-ev-mini');
+  if(dayEvs.length){
+    sec.style.display='block';mini.innerHTML='';
+    dayEvs.forEach(ev=>{
+      const item=document.createElement('div');item.className='mini-ev-item';
       item.innerHTML=`<div class="mini-dot" style="background:${ev.color}"></div>
-        <div class="mini-text">${ev.title||`${ev.tag} 기록`}</div>
+        <div class="mini-txt">${ev.title||'(제목 없음)'}</div>
         <span class="mini-tag" style="background:${ev.color}">${ev.tag}</span>`;
+      item.onclick=()=>openEvDetail(ev.id);
       mini.appendChild(item);
     });
-  } else { sec.style.display='none'; }
-  stopRecord(); stopSTT();
-  showPage('page-entry');
+  }else{sec.style.display='none';}
+  stopRec();stopSTT();go('p3');
 }
-
-function closeEntry(){
-  stopRecord(); stopSTT();
-  selectedKey=null;
-  showPage('page-main');
-}
-
+function closeEntry(){stopRec();stopSTT();selKey=null;go('p1');}
 function saveEntry(){
-  if(!selectedKey) return;
-  const e=entries[selectedKey]||{voices:[],photos:[],videos:[]};
+  if(!selKey)return;
+  const e=entries[selKey]||{voices:[],photos:[],videos:[]};
   e.text=document.getElementById('diary-text').value.trim();
-  e.mood=document.querySelector('.mood-chip.selected')?.dataset.mood||'';
-  if(!e.voices) e.voices=[];
-  if(!e.photos) e.photos=[];
-  if(!e.videos) e.videos=[];
-  if(e.text||e.mood||e.voices.length||e.photos.length||e.videos.length){
-    entries[selectedKey]=e;
-  } else { delete entries[selectedKey]; }
-  persistEntries();
-  renderCalendar();
-  showToast('저장되었어요 ✓');
+  e.mood=document.querySelector('.mood-chip.sel')?.dataset.mood||'';
+  if(!e.voices)e.voices=[];if(!e.photos)e.photos=[];if(!e.videos)e.videos=[];
+  if(e.text||e.mood||e.voices.length||e.photos.length||e.videos.length)entries[selKey]=e;
+  else delete entries[selKey];
+  saveEntries();renderCal();showToast('저장되었어요 ✓');
 }
+function selMood(el){document.querySelectorAll('.mood-chip').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
 
-function selectMood(el){
-  document.querySelectorAll('.mood-chip').forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');
-}
-
-// ── 사건 상세 뷰 ──
-let currentDetailId = null;
-
-function openEventDetail(id){
-  const ev = mainEvents.find(e=>e.id===id);
-  if(!ev) return;
-  currentDetailId = id;
-  const [y,m,d] = ev.date.split('-');
-  const dow = DAYS_KO[new Date(+y,+m-1,+d).getDay()];
-
-  document.getElementById('detail-page-title').textContent = ev.title || '사건 상세';
-
-  const body = document.getElementById('detail-body');
-  body.innerHTML = '';
-
-  // 날짜 + 카테고리 뱃지
-  const meta = document.createElement('div');
-  meta.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:20px;';
-  meta.innerHTML = `
-    <div style="font-size:15px;font-weight:600;color:var(--text)">${y}년 ${m}월 ${d}일 (${dow})</div>
-    <span style="font-size:11px;color:#fff;background:${ev.color};padding:3px 10px;border-radius:12px;font-weight:600">${ev.tag}</span>`;
-  body.appendChild(meta);
-
-  // 제목
-  if(ev.title){
-    const sec = document.createElement('div'); sec.className='field';
-    sec.innerHTML=`<label class="field-label">사건 제목</label>
-      <div style="font-size:16px;font-weight:700;color:var(--text);padding:12px 14px;background:var(--surface);border-radius:12px;border-left:4px solid ${ev.color}">${ev.title}</div>`;
-    body.appendChild(sec);
-  }
-
-  // 메모
-  if(ev.memo){
-    const sec = document.createElement('div'); sec.className='field';
-    sec.innerHTML=`<label class="field-label">메모</label>
-      <div style="font-size:14px;color:var(--text2);padding:12px 14px;background:var(--surface);border-radius:12px;line-height:1.7;white-space:pre-wrap">${ev.memo}</div>`;
-    body.appendChild(sec);
-  }
-
-  // 제목도 메모도 없으면
-  if(!ev.title && !ev.memo){
-    const sec = document.createElement('div'); sec.className='field';
-    sec.innerHTML=`<div style="font-size:13px;color:var(--text3);text-align:center;padding:16px 0">기록된 내용이 없어요</div>`;
-    body.appendChild(sec);
-  }
-
-  // 사진
-  if(ev.photos && ev.photos.length){
-    const sec = document.createElement('div'); sec.className='field';
-    sec.innerHTML=`<label class="field-label">사진</label>`;
-    const grid = document.createElement('div'); grid.className='photo-grid';
-    ev.photos.forEach(src=>{
-      const t=document.createElement('div'); t.className='photo-thumb';
-      t.innerHTML=`<img src="${src}" onclick="openLightbox('${src}')">`;
-      grid.appendChild(t);
-    });
-    sec.appendChild(grid);
-    body.appendChild(sec);
-  }
-
-  // 동영상
-  if(ev.videos && ev.videos.length){
-    const sec = document.createElement('div'); sec.className='field';
-    sec.innerHTML=`<label class="field-label">동영상</label>`;
-    const vlist = document.createElement('div'); vlist.className='video-list';
-    ev.videos.forEach(v=>{
-      const item=document.createElement('div'); item.className='video-item';
-      item.innerHTML=`<video src="${v.url}" controls></video>
-        <div class="video-footer"><span class="video-name">${v.name}</span></div>`;
-      vlist.appendChild(item);
-    });
-    sec.appendChild(vlist);
-    body.appendChild(sec);
-  }
-
-  showPage('page-event-detail');
-}
-
-function deleteCurrentEvent(){
-  if(!currentDetailId) return;
-  if(!confirm('이 사건을 삭제할까요?')) return;
-  deleteEvent(currentDetailId);
-  currentDetailId=null;
-  showPage('page-main');
-}
-
-// ── 사건 상세 뷰 ──
-function toggleEvSTT(){ evIsListening?stopEvSTT():startEvSTT(); }
-function startEvSTT(){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){ showToast('이 브라우저는 음성인식을 지원하지 않아요 😢'); return; }
-  evRecognition=new SR(); evRecognition.lang='ko-KR'; evRecognition.continuous=true; evRecognition.interimResults=true;
-  const ta=document.getElementById('ev-memo'), base=ta.value;
-  evRecognition.onresult=(e)=>{
-    let fin='',int='';
-    for(let i=e.resultIndex;i<e.results.length;i++){
-      if(e.results[i].isFinal) fin+=e.results[i][0].transcript;
-      else int+=e.results[i][0].transcript;
-    }
-    if(fin) ta.value=base+(base&&!base.endsWith('\n')?' ':'')+fin;
-    ta.placeholder=int||'간단한 메모를 남겨보세요...';
-  };
-  evRecognition.onerror=(e)=>{ if(e.error!=='no-speech') showToast('오류: '+e.error); stopEvSTT(); };
-  evRecognition.onend=()=>{ if(evIsListening) evRecognition.start(); };
-  evRecognition.start();
-  evIsListening=true;
-  document.getElementById('ev-stt-btn').classList.add('listening');
-  document.getElementById('ev-stt-label').textContent='듣는 중... (탭해서 중지)';
-}
-function stopEvSTT(){
-  if(evRecognition){evRecognition.onend=null;evRecognition.stop();evRecognition=null;}
-  evIsListening=false;
-  const btn=document.getElementById('ev-stt-btn');
-  if(btn) btn.classList.remove('listening');
-  const lbl=document.getElementById('ev-stt-label');
-  if(lbl) lbl.textContent='음성으로 입력';
-  const ta=document.getElementById('ev-memo');
-  if(ta) ta.placeholder='간단한 메모를 남겨보세요...';
-}
-
-// ── 사건 추가 페이지 사진 ──
-function addEvPhotos(input){
-  Array.from(input.files).forEach(f=>{
-    const reader=new FileReader();
-    reader.onload=e=>{ evPhotos.push(e.target.result); renderEvPhotoGrid(); };
-    reader.readAsDataURL(f);
-  });
-  input.value='';
-}
-function renderEvPhotoGrid(){
-  const grid=document.getElementById('ev-photo-grid'); grid.innerHTML='';
-  evPhotos.forEach((src,i)=>{
-    const t=document.createElement('div'); t.className='photo-thumb';
-    t.innerHTML=`<img src="${src}" onclick="openLightbox('${src}')"><button class="photo-del" onclick="deleteEvPhoto(${i})">✕</button>`;
-    grid.appendChild(t);
-  });
-}
-function deleteEvPhoto(i){ evPhotos.splice(i,1); renderEvPhotoGrid(); }
-
-// ── 사건 추가 페이지 동영상 ──
-function addEvVideos(input){
-  Array.from(input.files).forEach(f=>{
-    evVideos.push({url:URL.createObjectURL(f),name:f.name});
-    renderEvVideoList();
-  });
-  input.value='';
-}
-function renderEvVideoList(){
-  const el=document.getElementById('ev-video-list'); el.innerHTML='';
-  evVideos.forEach((v,i)=>{
-    const item=document.createElement('div'); item.className='video-item';
-    item.innerHTML=`<video src="${v.url}" controls></video>
-      <div class="video-footer"><span class="video-name">${v.name}</span>
-      <button class="video-del" onclick="deleteEvVideo(${i})">🗑</button></div>`;
-    el.appendChild(item);
-  });
-}
-function deleteEvVideo(i){ evVideos.splice(i,1); renderEvVideoList(); }
-
-// ── STT ──
-function toggleSTT(){ isListening?stopSTT():startSTT(); }
+// ── 일기 STT ──
+function toggleSTT(){isSTT?stopSTT():startSTT();}
 function startSTT(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){ showToast('이 브라우저는 음성인식을 지원하지 않아요 😢'); return; }
-  recognition=new SR(); recognition.lang='ko-KR'; recognition.continuous=true; recognition.interimResults=true;
-  const ta=document.getElementById('diary-text'), base=ta.value;
-  recognition.onresult=(e)=>{
-    let fin='',int='';
-    for(let i=e.resultIndex;i<e.results.length;i++){
-      if(e.results[i].isFinal) fin+=e.results[i][0].transcript;
-      else int+=e.results[i][0].transcript;
-    }
-    if(fin) ta.value=base+(base&&!base.endsWith('\n')?' ':'')+fin;
-    ta.placeholder=int||'오늘 어떤 하루였나요?...';
-  };
-  recognition.onerror=(e)=>{ if(e.error!=='no-speech') showToast('오류: '+e.error); stopSTT(); };
-  recognition.onend=()=>{ if(isListening) recognition.start(); };
-  recognition.start();
-  isListening=true;
-  document.getElementById('stt-btn').classList.add('listening');
-  document.getElementById('stt-label').textContent='듣는 중... (탭해서 중지)';
+  if(!SR){showToast('이 브라우저는 음성인식을 지원하지 않아요');return;}
+  recog=new SR();recog.lang='ko-KR';recog.continuous=true;recog.interimResults=true;
+  const ta=document.getElementById('diary-text'),base=ta.value;
+  recog.onresult=(e)=>{let f='',i='';for(let j=e.resultIndex;j<e.results.length;j++){if(e.results[j].isFinal)f+=e.results[j][0].transcript;else i+=e.results[j][0].transcript;}if(f)ta.value=base+(base?' ':'')+f;ta.placeholder=i||'오늘 어떤 하루였나요?';};
+  recog.onerror=()=>stopSTT();recog.onend=()=>{if(isSTT)recog.start();};
+  recog.start();isSTT=true;
+  document.getElementById('stt-btn').classList.add('on');
+  document.getElementById('stt-lbl').textContent='듣는 중... (탭해서 중지)';
 }
 function stopSTT(){
-  if(recognition){recognition.onend=null;recognition.stop();recognition=null;}
-  isListening=false;
-  document.getElementById('stt-btn').classList.remove('listening');
-  document.getElementById('stt-label').textContent='음성으로 입력';
-  document.getElementById('diary-text').placeholder='오늘 어떤 하루였나요? 자유롭게 적어보세요...';
+  if(recog){recog.onend=null;recog.stop();recog=null;}
+  isSTT=false;
+  const b=document.getElementById('stt-btn');if(b)b.classList.remove('on');
+  const l=document.getElementById('stt-lbl');if(l)l.textContent='음성으로 입력';
 }
 
 // ── 음성 녹음 ──
-function toggleRecord(){ isRecording?stopRecord(true):startRecord(); }
-async function startRecord(){
+function toggleRec(){isRec?stopRec(true):startRec();}
+async function startRec(){
   try{
     const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    audioChunks=[];
-    mediaRecorder=new MediaRecorder(stream);
-    mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
-    mediaRecorder.onstop=()=>{
-      const blob=new Blob(audioChunks,{type:'audio/webm'});
-      const url=URL.createObjectURL(blob);
-      const dur=recSeconds;
-      if(!entries[selectedKey]) entries[selectedKey]={voices:[],photos:[],videos:[]};
-      if(!entries[selectedKey].voices) entries[selectedKey].voices=[];
-      entries[selectedKey].voices.push({url,dur,name:`음성 ${entries[selectedKey].voices.length+1}`});
-      renderVoiceList(entries[selectedKey].voices);
-      stream.getTracks().forEach(t=>t.stop());
+    ac=[];mr=new MediaRecorder(stream);
+    mr.ondataavailable=e=>ac.push(e.data);
+    mr.onstop=()=>{
+      const blob=new Blob(ac,{type:'audio/webm'}),url=URL.createObjectURL(blob),dur=rs;
+      if(!entries[selKey])entries[selKey]={voices:[],photos:[],videos:[]};
+      if(!entries[selKey].voices)entries[selKey].voices=[];
+      entries[selKey].voices.push({url,dur,name:`음성 ${entries[selKey].voices.length+1}`});
+      renderVL(entries[selKey].voices);stream.getTracks().forEach(t=>t.stop());
     };
-    mediaRecorder.start(); isRecording=true; recSeconds=0;
-    document.getElementById('rec-btn').classList.add('recording');
+    mr.start();isRec=true;rs=0;
+    document.getElementById('rec-btn').classList.add('on');
     document.getElementById('rec-btn').textContent='⏹';
     document.getElementById('rec-status').textContent='녹음 중...';
-    document.getElementById('waveform').style.display='flex';
-    recTimer=setInterval(()=>{ recSeconds++; const m=Math.floor(recSeconds/60),s=String(recSeconds%60).padStart(2,'0'); document.getElementById('rec-time').textContent=`${m}:${s}`; },1000);
-  }catch(e){ showToast('마이크 권한이 필요해요 🎙️'); }
+    document.getElementById('wf').style.display='flex';
+    rt=setInterval(()=>{rs++;const m=Math.floor(rs/60),s=String(rs%60).padStart(2,'0');document.getElementById('rec-time').textContent=`${m}:${s}`;},1000);
+  }catch(e){showToast('마이크 권한이 필요해요 🎙️');}
 }
-function stopRecord(save=false){
-  if(!isRecording) return;
-  clearInterval(recTimer);
-  if(mediaRecorder&&mediaRecorder.state!=='inactive'){ if(save) mediaRecorder.stop(); else mediaRecorder.stream?.getTracks().forEach(t=>t.stop()); }
-  isRecording=false;
-  document.getElementById('rec-btn').classList.remove('recording');
+function stopRec(save=false){
+  if(!isRec)return;clearInterval(rt);
+  if(mr&&mr.state!=='inactive'){if(save)mr.stop();else mr.stream?.getTracks().forEach(t=>t.stop());}
+  isRec=false;
+  document.getElementById('rec-btn').classList.remove('on');
   document.getElementById('rec-btn').textContent='🎙️';
   document.getElementById('rec-status').textContent='버튼을 눌러 녹음 시작';
   document.getElementById('rec-time').textContent='0:00';
-  document.getElementById('waveform').style.display='none';
-  recSeconds=0;
+  document.getElementById('wf').style.display='none';rs=0;
 }
-function renderVoiceList(voices){
-  const el=document.getElementById('voice-list'); el.innerHTML='';
-  voices.forEach((v,i)=>{
-    const m=Math.floor(v.dur/60),s=String(v.dur%60).padStart(2,'0');
-    const item=document.createElement('div'); item.className='voice-item';
-    item.innerHTML=`<button class="play-btn" onclick="playVoice('${v.url}')">▶</button>
-      <div class="voice-meta"><div class="voice-name">${v.name}</div><div class="voice-dur">${m}:${s}</div></div>
-      <button class="del-btn" onclick="deleteVoice(${i})">🗑</button>`;
-    el.appendChild(item);
-  });
+function renderVL(voices){
+  const el=document.getElementById('voice-list');el.innerHTML='';
+  voices.forEach((v,i)=>{const m=Math.floor(v.dur/60),s=String(v.dur%60).padStart(2,'0');const item=document.createElement('div');item.className='voice-item';item.innerHTML=`<button class="play-btn" onclick="new Audio('${v.url}').play()">▶</button><div class="vm"><div class="vn">${v.name}</div><div class="vd">${m}:${s}</div></div><button class="del-btn" onclick="entries['${selKey}'].voices.splice(${i},1);renderVL(entries['${selKey}'].voices)">🗑</button>`;el.appendChild(item);});
 }
-function playVoice(url){ new Audio(url).play(); }
-function deleteVoice(i){ entries[selectedKey].voices.splice(i,1); renderVoiceList(entries[selectedKey].voices); }
 
-// ── 사진 ──
-function addPhotos(input){
-  const files=Array.from(input.files);
-  if(!entries[selectedKey]) entries[selectedKey]={voices:[],photos:[],videos:[]};
-  if(!entries[selectedKey].photos) entries[selectedKey].photos=[];
-  files.forEach(f=>{ const reader=new FileReader(); reader.onload=e=>{ entries[selectedKey].photos.push(e.target.result); renderPhotoGrid(entries[selectedKey].photos); }; reader.readAsDataURL(f); });
-  input.value='';
+// ── 일기 사진/동영상 ──
+function addEntryPhotos(input){
+  Array.from(input.files).forEach(f=>{
+    const r=new FileReader();
+    r.onload=e=>{
+      if(!entries[selKey])entries[selKey]={voices:[],photos:[],videos:[]};
+      if(!entries[selKey].photos)entries[selKey].photos=[];
+      entries[selKey].photos.push(e.target.result);renderEntryPG(entries[selKey].photos);
+    };r.readAsDataURL(f);
+  });input.value='';
 }
-function renderPhotoGrid(photos){
-  const grid=document.getElementById('photo-grid'); grid.innerHTML='';
-  photos.forEach((src,i)=>{ const t=document.createElement('div'); t.className='photo-thumb'; t.innerHTML=`<img src="${src}" onclick="openLightbox('${src}')"><button class="photo-del" onclick="deletePhoto(${i})">✕</button>`; grid.appendChild(t); });
+function renderEntryPG(photos){
+  const g=document.getElementById('e-pg');g.innerHTML='';
+  photos.forEach((src,i)=>{const t=document.createElement('div');t.className='photo-thumb';t.innerHTML=`<img src="${src}" onclick="openLb('${src}')"><button class="photo-del" onclick="entries['${selKey}'].photos.splice(${i},1);renderEntryPG(entries['${selKey}'].photos)">✕</button>`;g.appendChild(t);});
 }
-function deletePhoto(i){ entries[selectedKey].photos.splice(i,1); renderPhotoGrid(entries[selectedKey].photos); }
-function openLightbox(src){ document.getElementById('lightbox-img').src=src; document.getElementById('lightbox').classList.add('open'); }
-function closeLightbox(){ document.getElementById('lightbox').classList.remove('open'); }
+function addEntryVideos(input){
+  Array.from(input.files).forEach(f=>{
+    if(!entries[selKey])entries[selKey]={voices:[],photos:[],videos:[]};
+    if(!entries[selKey].videos)entries[selKey].videos=[];
+    entries[selKey].videos.push({url:URL.createObjectURL(f),name:f.name});
+    renderEntryVL(entries[selKey].videos);
+  });input.value='';
+}
+function renderEntryVL(videos){
+  const el=document.getElementById('e-vl');el.innerHTML='';
+  videos.forEach((v,i)=>{const item=document.createElement('div');item.className='vid-item';item.innerHTML=`<video src="${v.url}" controls></video><div class="vid-footer"><span class="vid-name">${v.name}</span><button class="vid-del" onclick="entries['${selKey}'].videos.splice(${i},1);renderEntryVL(entries['${selKey}'].videos)">🗑</button></div>`;el.appendChild(item);});
+}
 
-// ── 동영상 ──
-function addVideos(input){
-  const files=Array.from(input.files);
-  if(!entries[selectedKey]) entries[selectedKey]={voices:[],photos:[],videos:[]};
-  if(!entries[selectedKey].videos) entries[selectedKey].videos=[];
-  files.forEach(f=>{ const url=URL.createObjectURL(f); entries[selectedKey].videos.push({url,name:f.name}); renderVideoList(entries[selectedKey].videos); });
-  input.value='';
-}
-function renderVideoList(videos){
-  const el=document.getElementById('video-list'); el.innerHTML='';
-  videos.forEach((v,i)=>{ const item=document.createElement('div'); item.className='video-item'; item.innerHTML=`<video src="${v.url}" controls></video><div class="video-footer"><span class="video-name">${v.name}</span><button class="video-del" onclick="deleteVideo(${i})">🗑</button></div>`; el.appendChild(item); });
-}
-function deleteVideo(i){ entries[selectedKey].videos.splice(i,1); renderVideoList(entries[selectedKey].videos); }
+// ── 라이트박스 ──
+function openLb(src){document.getElementById('lb-img').src=src;document.getElementById('lb').classList.add('open');}
+function closeLb(){document.getElementById('lb').classList.remove('open');}
 
-// ── TOAST ──
-function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+// ── 태그/색상 클릭 ──
+document.addEventListener('click',function(e){
+  if(e.target.classList.contains('tag-opt')){e.target.closest('.tag-row').querySelectorAll('.tag-opt').forEach(t=>t.classList.remove('sel'));e.target.classList.add('sel');}
+  if(e.target.classList.contains('col-opt')){e.target.closest('.col-row').querySelectorAll('.col-opt').forEach(c=>c.classList.remove('sel'));e.target.classList.add('sel');}
+});
 
-// ── INIT ──
-loadData();
+// ── 토스트 ──
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+
+// ── 시작 ──
+load();
 </script>
 </body>
 </html>
