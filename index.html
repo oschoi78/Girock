@@ -256,7 +256,31 @@
 
     <div class="field">
       <label class="field-label">메모 <span style="color:var(--text3);font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">(선택)</span></label>
-      <textarea id="ev-memo" class="field-textarea" placeholder="간단한 메모를 남겨보세요..."></textarea>
+      <div class="text-wrap" style="margin-bottom:0">
+        <textarea id="ev-memo" class="field-textarea" placeholder="간단한 메모를 남겨보세요..."></textarea>
+        <button class="stt-btn" id="ev-stt-btn" onclick="toggleEvSTT()">
+          <span class="stt-dot"></span>
+          <span id="ev-stt-label">음성으로 입력</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">사진 <span style="color:var(--text3);font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">(선택)</span></label>
+      <div class="photo-panel" style="margin-bottom:0">
+        <button class="photo-add-btn" onclick="document.getElementById('ev-photo-input').click()">📷 사진 추가</button>
+        <input type="file" id="ev-photo-input" accept="image/*" multiple onchange="addEvPhotos(this)">
+        <div class="photo-grid" id="ev-photo-grid"></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">동영상 <span style="color:var(--text3);font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">(선택)</span></label>
+      <div class="photo-panel" style="margin-bottom:0">
+        <button class="photo-add-btn" onclick="document.getElementById('ev-video-input').click()">🎬 동영상 추가</button>
+        <input type="file" id="ev-video-input" accept="video/*" multiple onchange="addEvVideos(this)">
+        <div class="video-list" id="ev-video-list"></div>
+      </div>
     </div>
 
     <div class="field">
@@ -456,10 +480,12 @@ function renderEventsGrid(){
     const card=document.createElement('div');
     card.className='event-card';
     card.style.borderLeftColor=ev.color;
-    const label=ev.title||`${m}월 ${d}일 기록`;
+    const titleHtml = ev.title
+      ? `<div class="event-card-title">${ev.title}</div>`
+      : `<div class="event-card-title" style="font-size:18px;letter-spacing:4px;color:${ev.color}">···</div>`;
     card.innerHTML=`
       <div class="event-card-top">
-        <div class="event-card-title">${label}</div>
+        ${titleHtml}
         <button class="event-card-del" onclick="deleteEvent('${ev.id}')">✕</button>
       </div>
       <div class="event-card-date">${y}.${m}.${d}</div>
@@ -469,10 +495,18 @@ function renderEventsGrid(){
 }
 
 // ── 사건 추가 페이지 ──
+// 사건 추가 페이지용 임시 미디어
+let evPhotos = [];
+let evVideos = [];
+let evRecognition = null, evIsListening = false;
+
 function goAddEvent(){
   document.getElementById('ev-date').value=todayKey();
   document.getElementById('ev-title').value='';
   document.getElementById('ev-memo').value='';
+  evPhotos=[]; evVideos=[];
+  renderEvPhotoGrid(); renderEvVideoList();
+  stopEvSTT();
   // 태그/색상 초기화
   document.querySelectorAll('#ev-tags .tag-opt').forEach((t,i)=>t.classList.toggle('sel',i===0));
   document.querySelectorAll('#ev-colors .color-opt').forEach((c,i)=>c.classList.toggle('sel',i===0));
@@ -486,7 +520,8 @@ function saveEvent(){
   if(!date){ showToast('날짜를 선택해 주세요'); return; }
   const tag  =document.querySelector('#ev-tags .tag-opt.sel')?.dataset.tag||'일상';
   const color=document.querySelector('#ev-colors .color-opt.sel')?.dataset.color||'#4a7fb5';
-  mainEvents.unshift({ id:Date.now().toString(), date, title, memo, tag, color });
+  stopEvSTT();
+  mainEvents.unshift({ id:Date.now().toString(), date, title, memo, tag, color, photos:[...evPhotos], videos:[...evVideos] });
   persistMainEvents();
   renderEventsGrid();
   renderCalendar();
@@ -571,6 +606,79 @@ function selectMood(el){
   document.querySelectorAll('.mood-chip').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
 }
+
+// ── 사건 추가 페이지 STT ──
+function toggleEvSTT(){ evIsListening?stopEvSTT():startEvSTT(); }
+function startEvSTT(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ showToast('이 브라우저는 음성인식을 지원하지 않아요 😢'); return; }
+  evRecognition=new SR(); evRecognition.lang='ko-KR'; evRecognition.continuous=true; evRecognition.interimResults=true;
+  const ta=document.getElementById('ev-memo'), base=ta.value;
+  evRecognition.onresult=(e)=>{
+    let fin='',int='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal) fin+=e.results[i][0].transcript;
+      else int+=e.results[i][0].transcript;
+    }
+    if(fin) ta.value=base+(base&&!base.endsWith('\n')?' ':'')+fin;
+    ta.placeholder=int||'간단한 메모를 남겨보세요...';
+  };
+  evRecognition.onerror=(e)=>{ if(e.error!=='no-speech') showToast('오류: '+e.error); stopEvSTT(); };
+  evRecognition.onend=()=>{ if(evIsListening) evRecognition.start(); };
+  evRecognition.start();
+  evIsListening=true;
+  document.getElementById('ev-stt-btn').classList.add('listening');
+  document.getElementById('ev-stt-label').textContent='듣는 중... (탭해서 중지)';
+}
+function stopEvSTT(){
+  if(evRecognition){evRecognition.onend=null;evRecognition.stop();evRecognition=null;}
+  evIsListening=false;
+  const btn=document.getElementById('ev-stt-btn');
+  if(btn) btn.classList.remove('listening');
+  const lbl=document.getElementById('ev-stt-label');
+  if(lbl) lbl.textContent='음성으로 입력';
+  const ta=document.getElementById('ev-memo');
+  if(ta) ta.placeholder='간단한 메모를 남겨보세요...';
+}
+
+// ── 사건 추가 페이지 사진 ──
+function addEvPhotos(input){
+  Array.from(input.files).forEach(f=>{
+    const reader=new FileReader();
+    reader.onload=e=>{ evPhotos.push(e.target.result); renderEvPhotoGrid(); };
+    reader.readAsDataURL(f);
+  });
+  input.value='';
+}
+function renderEvPhotoGrid(){
+  const grid=document.getElementById('ev-photo-grid'); grid.innerHTML='';
+  evPhotos.forEach((src,i)=>{
+    const t=document.createElement('div'); t.className='photo-thumb';
+    t.innerHTML=`<img src="${src}" onclick="openLightbox('${src}')"><button class="photo-del" onclick="deleteEvPhoto(${i})">✕</button>`;
+    grid.appendChild(t);
+  });
+}
+function deleteEvPhoto(i){ evPhotos.splice(i,1); renderEvPhotoGrid(); }
+
+// ── 사건 추가 페이지 동영상 ──
+function addEvVideos(input){
+  Array.from(input.files).forEach(f=>{
+    evVideos.push({url:URL.createObjectURL(f),name:f.name});
+    renderEvVideoList();
+  });
+  input.value='';
+}
+function renderEvVideoList(){
+  const el=document.getElementById('ev-video-list'); el.innerHTML='';
+  evVideos.forEach((v,i)=>{
+    const item=document.createElement('div'); item.className='video-item';
+    item.innerHTML=`<video src="${v.url}" controls></video>
+      <div class="video-footer"><span class="video-name">${v.name}</span>
+      <button class="video-del" onclick="deleteEvVideo(${i})">🗑</button></div>`;
+    el.appendChild(item);
+  });
+}
+function deleteEvVideo(i){ evVideos.splice(i,1); renderEvVideoList(); }
 
 // ── STT ──
 function toggleSTT(){ isListening?stopSTT():startSTT(); }
